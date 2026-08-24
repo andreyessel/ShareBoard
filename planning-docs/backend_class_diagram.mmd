@@ -1,0 +1,23 @@
+classDiagram
+    class Listing {
+  
+    }
+    %% class MatchLine {
+        
+    %% }
+    class MatchingEngine {
+        +submit(Listing)
+        +attemptMatch()
+        +deadlineCrosses()
+    }
+    class ListingService
+    class ListingController
+    class WebSocketMatchHandler
+
+    ListingController --> ListingService
+    ListingService --> MatchingEngine
+    ListingService --> ListingRepository
+    MatchingEngine --> WebSocketMatchHandler : pushes update on match
+    ListingRepository --> Listing
+    Listing --> Category
+    Listing --> User

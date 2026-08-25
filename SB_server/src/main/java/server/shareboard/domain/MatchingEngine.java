@@ -26,6 +26,7 @@ public class MatchingEngine {
     //submitting a listing
     public List<MatchLine> submit(Listing listing){
         List<MatchLine> matches = new ArrayList<>();
+
         if(listing.getType() == ListingType.NEED){
           matches = attemptMatch(listing);
 
@@ -45,8 +46,25 @@ public class MatchingEngine {
 
     //matching a listing
     private List<MatchLine> attemptMatch(Listing listing) {
+        List<MatchLine> matches = new ArrayList<>();
 
-        return List.of();
+        PriorityQueue<Listing> opposite = (listing.getType() == ListingType.NEED)
+                ? surplusQueue : needQueue;
+
+      while(listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
+          Listing candidate = opposite.peek();
+
+          boolean crosses = (listing.getType() == ListingType.NEED)
+                  ? deadlineCrosses(listing.getNeededBy(), candidate.getAvailableUntil())
+                  : deadlineCrosses(candidate.getNeededBy(), listing.getAvailableUntil());
+
+          if(crosses){
+              opposite.peek();
+          }else{
+              opposite.poll();
+          }
+      }
+        return matches;
     }
 
     //checking which listing has cross the deadline

@@ -1,28 +1,28 @@
 package server.shareboard.models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class MatchLine {
-    private int matchLineid;
+    private int matchLineId;
     private int  needListingId;
     private int surplusListingId;
     private int quantityMatched;
-    private LocalDate matchedAt;
+    private LocalDateTime matchedAt;
 
-    public MatchLine(LocalDate matchedAt, int quantityMatched, int surplusListingId, int needListingId, int matchLineid) {
+    public MatchLine(LocalDateTime matchedAt, int quantityMatched, int surplusListingId, int needListingId, int matchLineId) {
         this.matchedAt = matchedAt;
         this.quantityMatched = quantityMatched;
         this.surplusListingId = surplusListingId;
         this.needListingId = needListingId;
-        this.matchLineid = matchLineid;
+        this.matchLineId = matchLineId;
     }
 
     public int getMatchLineid() {
-        return matchLineid;
+        return matchLineId;
     }
 
-    public void setMatchLineid(int matchLineid) {
-        this.matchLineid = matchLineid;
+    public void setMatchLineid(int matchLineId) {
+        this.matchLineId = matchLineId;
     }
 
     public int getNeedListingId() {
@@ -49,11 +49,11 @@ public class MatchLine {
         this.quantityMatched = quantityMatched;
     }
 
-    public LocalDate getMatchedAt() {
+    public LocalDateTime getMatchedAt() {
         return matchedAt;
     }
 
-    public void setMatchedAt(LocalDate matchedAt) {
+    public void setMatchedAt(LocalDateTime matchedAt) {
         this.matchedAt = matchedAt;
     }
 }

@@ -1,19 +1,19 @@
 package server.shareboard.models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class User {
     private int userId;
     private String username;
-    private String password;
+    private String passwordHash;
     private boolean isOrganization;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    public User(boolean isOrganization, int userId, String username, String password, LocalDate createdAt) {
+    public User(boolean isOrganization, int userId, String username, String passwordHash, LocalDateTime createdAt) {
         this.isOrganization = isOrganization;
         this.userId = userId;
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.createdAt = createdAt;
     }
 
@@ -34,11 +34,11 @@ public class User {
     }
 
     public String getPassword() {
-        return password;
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public boolean isOrganization() {
@@ -49,11 +49,11 @@ public class User {
         isOrganization = organization;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

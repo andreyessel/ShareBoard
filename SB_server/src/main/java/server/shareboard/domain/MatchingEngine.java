@@ -4,6 +4,7 @@ import server.shareboard.models.Listing;
 import server.shareboard.models.MatchLine;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MatchingEngine {
@@ -11,11 +12,11 @@ public class MatchingEngine {
     //submitting a listing
     public List<MatchLine> submit(Listing listing){
 
-        return null;
+        return new ArrayList<MatchLine>();
     }
 
     //matching a listing
-    public void attemptMatch( /*incoming, otherSideQueue*/) {
+    public void attemptMatch(Listing listing, List<Listing> otherSide) {
 
     }
 

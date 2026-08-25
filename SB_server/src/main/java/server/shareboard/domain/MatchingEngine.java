@@ -16,13 +16,17 @@ public class MatchingEngine {
     }
 
     //matching a listing
-    public void attemptMatch(Listing listing, List<Listing> otherSide) {
+    public List<MatchLine> attemptMatch(Listing listing, List<Listing> otherSide) {
 
+        return List.of();
     }
 
     //checking which listing has cross the deadline
     public boolean deadlineCrosses(LocalDate neededBy, LocalDate availableUntil){
-
-        return false;
+        if (availableUntil.isBefore(neededBy)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

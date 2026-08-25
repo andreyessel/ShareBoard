@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e1696a02-5651-4977-ab66-4ed65c0c56d0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/shareboard/domain/MatchingEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/shareboard/domain/MatchingEngine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/shareboard/models/MatchLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/shareboard/models/MatchLine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/shareboard/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/shareboard/models/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/server/shareboard/domain/MatchingEngineTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/server/shareboard/domain/MatchingEngineTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="e1696a02-5651-4977-ab66-4ed65c0c56d0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

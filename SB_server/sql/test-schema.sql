@@ -52,19 +52,19 @@ DELIMITER //
 
 CREATE PROCEDURE set_known_good_state()
 BEGIN
-    -- delete children before parents, same FK-order rule as any delete you've done before
+                                                                                                                                                                            -- delete children before parents, same FK-order rule as any delete you've done before
     DELETE FROM match_line;
     DELETE FROM listing;
     DELETE FROM category;
     DELETE FROM user;
 
-    -- reset auto-increment so IDs are predictable every time this runs
+                                                                                                                                                                                             -- reset auto-increment so IDs are predictable every time this runs
     ALTER TABLE match_line AUTO_INCREMENT = 1;
     ALTER TABLE listing AUTO_INCREMENT = 1;
     ALTER TABLE category AUTO_INCREMENT = 1;
     ALTER TABLE user AUTO_INCREMENT = 1;
 
-    -- a small, known dataset — enough to exercise your repository methods, nothing more
+                                                                                                                                                                                             -- a small, known dataset — enough to exercise your repository methods, nothing more
     INSERT INTO user (id, username, password_hash, is_organization) VALUES
         (1, 'test_org', 'hash1', TRUE),
         (2, 'test_donor', 'hash2', FALSE);

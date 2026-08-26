@@ -1,6 +1,7 @@
 package server.shareboard.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Listing {
     private int listingId;
@@ -13,9 +14,10 @@ public class Listing {
     private LocalDate neededBy;
     private LocalDate availableUntil;
     private Status status;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    public Listing(int listingId, int userId, int categoryId, ListingType type, int quantity, int quantityRemaining, Urgency urgency, LocalDate neededBy, LocalDate availableUntil, Status status, LocalDate createdAt) {
+
+    public Listing(int listingId, int userId, int categoryId, ListingType type, int quantity, int quantityRemaining, Urgency urgency, LocalDate neededBy, LocalDate availableUntil, Status status, LocalDateTime createdAt) {
         this.listingId = listingId;
         this.userId = userId;
         this.categoryId = categoryId;
@@ -109,11 +111,11 @@ public class Listing {
         this.status = status;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

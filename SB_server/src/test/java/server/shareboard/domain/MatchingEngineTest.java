@@ -26,6 +26,8 @@ class MatchingEngineTest {
         assertEquals(1,matches.size());
         assertEquals(0, need.getQuantityRemaining());
         assertEquals(0, surplus.getQuantityRemaining());
+        assertEquals(Status.MATCHED,need.getStatus());
+        assertEquals(Status.MATCHED, surplus.getStatus());
     }
 
     @Test
@@ -91,6 +93,8 @@ class MatchingEngineTest {
         assertEquals(1, matches.size());
         assertEquals(12, need.getQuantityRemaining());
         assertEquals(0, surplus.getQuantityRemaining());
+        assertEquals(Status.PARTIALLY_MATCHED,need.getStatus());
+        assertEquals(Status.MATCHED, surplus.getStatus());
     }
 
     @Test
@@ -108,6 +112,8 @@ class MatchingEngineTest {
         assertEquals(1, matches.size());
         assertEquals(0, need.getQuantityRemaining());
         assertEquals(12, surplus.getQuantityRemaining());
+        assertEquals(Status.MATCHED,need.getStatus());
+        assertEquals(Status.PARTIALLY_MATCHED, surplus.getStatus());
     }
 
     @Test

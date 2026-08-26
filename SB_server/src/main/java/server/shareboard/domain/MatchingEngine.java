@@ -3,6 +3,7 @@ package server.shareboard.domain;
 import server.shareboard.models.Listing;
 import server.shareboard.models.ListingType;
 import server.shareboard.models.MatchLine;
+import server.shareboard.models.Status;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,6 +72,9 @@ public class MatchingEngine {
            listing.setQuantityRemaining(listing.getQuantityRemaining() - matchedQuantity);
            candidate.setQuantityRemaining(candidate.getQuantityRemaining() - matchedQuantity);
 
+           updateStatusAfterMatch(listing);
+           updateStatusAfterMatch(candidate);
+
            int needListingId = (listing.getType() == ListingType.NEED) ? listing.getListingId() : candidate.getListingId();
            int surplusListingId = (listing.getType() == ListingType.SURPLUS) ?  listing.getListingId() : candidate.getListingId();
 
@@ -92,6 +96,16 @@ public class MatchingEngine {
             return true;
         } else {
             return false;
+        }
+    }
+
+
+    //checking status after a match
+    private void updateStatusAfterMatch(Listing listing) {
+        if (listing.getQuantityRemaining() == 0){
+            listing.setStatus(Status.MATCHED);
+        }else{
+            listing.setStatus(Status.PARTIALLY_MATCHED);
         }
     }
 

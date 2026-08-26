@@ -65,7 +65,7 @@ BEGIN
     ALTER TABLE user AUTO_INCREMENT = 1;
 
                                                                                                                                                                                              -- a small, known dataset — enough to exercise your repository methods, nothing more
-    INSERT INTO user (user_id, username, password_hash, is_organization) VALUES
+    INSERT INTO user (id, username, password_hash, is_organization) VALUES
         (1, 'test_org', 'hash1', TRUE),
         (2, 'test_donor', 'hash2', FALSE);
 

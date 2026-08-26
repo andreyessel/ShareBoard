@@ -28,28 +28,28 @@ class MatchingEngineTest {
     }
 
     @Test
-    void deadlineCrossesWhenSurplusAvailableUntilIsBeforeNeeded() {
+    void datesAreCompatibleWhenSurplusAvailableUntilIsAfterNeeded() {
         //Arrange
         LocalDate needBy = LocalDate.of(2026,8,1);
-        LocalDate surplusAvailableUntil = LocalDate.of(2026,7, 1);
+        LocalDate surplusAvailableUntil = LocalDate.of(2026,9, 1);
         MatchingEngine engine = new MatchingEngine();
 
         //Act
-        boolean result = engine.deadlineCrosses(needBy,surplusAvailableUntil);
+        boolean result = engine.datesAreCompatible(needBy,surplusAvailableUntil);
 
         //Assert
         assertTrue(result);
     }
 
     @Test
-    void deadLineDoesNotCrossWhenSurplusIsAvailableUntilIsAfterNeeded() {
+    void datesAreNotCompatiblesWhenSurplusIsAvailableUntilIsBeforeNeeded() {
         //Arrange
         LocalDate needBy = LocalDate.of(2026,7,1);
-        LocalDate surplusAvailableUntil = LocalDate.of(2026,8, 1);
+        LocalDate surplusAvailableUntil = LocalDate.of(2026,6, 1);
         MatchingEngine engine = new MatchingEngine();
 
         //Act
-        boolean result = engine.deadlineCrosses(needBy,surplusAvailableUntil);
+        boolean result = engine.datesAreCompatible(needBy,surplusAvailableUntil);
 
         //Asser
         assertFalse(result);

@@ -54,15 +54,15 @@ public class MatchingEngine {
 
         List<Listing> skipped = new ArrayList<>();
 
-      while(listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
+        while(listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
           Listing candidate = opposite.poll();
 
-          boolean crosses = (listing.getType() == ListingType.NEED)
-                  ? deadlineCrosses(listing.getNeededBy(), candidate.getAvailableUntil())
-                  : deadlineCrosses(candidate.getNeededBy(), listing.getAvailableUntil());
+          boolean compatible = (listing.getType() == ListingType.NEED)
+                  ? datesAreCompatible(listing.getNeededBy(), candidate.getAvailableUntil())
+                  : datesAreCompatible(candidate.getNeededBy(), listing.getAvailableUntil());
 
 //continuing tomorrow
-          if(crosses){
+          if(!compatible){
             skipped.add(candidate);
           }else{
            int matchedQuantity = Math.min(listing.getQuantityRemaining(), candidate.getQuantityRemaining() );
@@ -85,8 +85,8 @@ public class MatchingEngine {
     }
 
     //checking which listing has cross the deadline
-    public boolean deadlineCrosses(LocalDate neededBy, LocalDate availableUntil){
-        if (availableUntil.isBefore(neededBy)) {
+    public boolean datesAreCompatible(LocalDate neededBy, LocalDate availableUntil){
+        if (availableUntil.isAfter(neededBy) || availableUntil.isEqual(neededBy)) {
             return true;
         } else {
             return false;

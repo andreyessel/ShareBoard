@@ -57,12 +57,14 @@ public class MatchingEngine {
         while(listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
           Listing candidate = opposite.poll();
 
+          boolean sameCategory = listing.getCategoryId() == candidate.getCategoryId();
+
           boolean compatible = (listing.getType() == ListingType.NEED)
                   ? datesAreCompatible(listing.getNeededBy(), candidate.getAvailableUntil())
                   : datesAreCompatible(candidate.getNeededBy(), listing.getAvailableUntil());
 
 //continuing tomorrow
-          if(!compatible){
+          if(!sameCategory || !compatible){
             skipped.add(candidate);
           }else{
            int matchedQuantity = Math.min(listing.getQuantityRemaining(), candidate.getQuantityRemaining() );

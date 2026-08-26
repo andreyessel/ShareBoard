@@ -9,11 +9,12 @@ public class User {
     private boolean isOrganization;
     private LocalDateTime createdAt;
 
-    public User(boolean isOrganization, int userId, String username, String passwordHash, LocalDateTime createdAt) {
-        this.isOrganization = isOrganization;
+
+    public User(int userId, String username, String passwordHash, boolean isOrganization, LocalDateTime createdAt) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
+        this.isOrganization = isOrganization;
         this.createdAt = createdAt;
     }
 
@@ -33,11 +34,11 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPassword(String passwordHash) {
+    public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 

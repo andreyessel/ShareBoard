@@ -58,11 +58,12 @@ public class MatchingEngine {
                   ? deadlineCrosses(listing.getNeededBy(), candidate.getAvailableUntil())
                   : deadlineCrosses(candidate.getNeededBy(), listing.getAvailableUntil());
 
-          if(crosses){
-              opposite.peek();
-          }else{
-              opposite.poll();
-          }
+//continuing tomorrow
+//          if(crosses){
+//              opposite.peek();
+//          }else{
+//              opposite.poll();
+//          }
       }
         return matches;
     }

@@ -5,6 +5,7 @@ import server.shareboard.models.ListingType;
 import server.shareboard.models.MatchLine;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -51,20 +52,35 @@ public class MatchingEngine {
         PriorityQueue<Listing> opposite = (listing.getType() == ListingType.NEED)
                 ? surplusQueue : needQueue;
 
+        List<Listing> skipped = new ArrayList<>();
+
       while(listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
-          Listing candidate = opposite.peek();
+          Listing candidate = opposite.poll();
 
           boolean crosses = (listing.getType() == ListingType.NEED)
                   ? deadlineCrosses(listing.getNeededBy(), candidate.getAvailableUntil())
                   : deadlineCrosses(candidate.getNeededBy(), listing.getAvailableUntil());
 
 //continuing tomorrow
-//          if(crosses){
-//              opposite.peek();
-//          }else{
-//              opposite.poll();
-//          }
+          if(crosses){
+            skipped.add(candidate);
+          }else{
+           int matchedQuantity = Math.min(listing.getQuantityRemaining(), candidate.getQuantityRemaining() );
+           listing.setQuantityRemaining(listing.getQuantityRemaining() - matchedQuantity);
+           candidate.setQuantityRemaining(candidate.getQuantityRemaining() - matchedQuantity);
+
+           int needListingId = (listing.getType() == ListingType.NEED) ? listing.getListingId() : candidate.getListingId();
+           int surplusListingId = (listing.getType() == ListingType.SURPLUS) ?  listing.getListingId() : candidate.getListingId();
+
+           MatchLine match = new MatchLine(0,needListingId,surplusListingId,matchedQuantity,LocalDateTime.now());
+           matches.add(match);
+
+           if(candidate.getQuantityRemaining() > 0) {
+               skipped.add(candidate);
+           }
+          }
       }
+        opposite.addAll(skipped);
         return matches;
     }
 

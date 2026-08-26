@@ -9,19 +9,20 @@ public class MatchLine {
     private int quantityMatched;
     private LocalDateTime matchedAt;
 
-    public MatchLine(LocalDateTime matchedAt, int quantityMatched, int surplusListingId, int needListingId, int matchLineId) {
-        this.matchedAt = matchedAt;
-        this.quantityMatched = quantityMatched;
-        this.surplusListingId = surplusListingId;
-        this.needListingId = needListingId;
+
+    public MatchLine(int matchLineId, int needListingId, int surplusListingId, int quantityMatched, LocalDateTime matchedAt) {
         this.matchLineId = matchLineId;
+        this.needListingId = needListingId;
+        this.surplusListingId = surplusListingId;
+        this.quantityMatched = quantityMatched;
+        this.matchedAt = matchedAt;
     }
 
-    public int getMatchLineid() {
+    public int getMatchLineId() {
         return matchLineId;
     }
 
-    public void setMatchLineid(int matchLineId) {
+    public void setMatchLineId(int matchLineId) {
         this.matchLineId = matchLineId;
     }
 

@@ -75,4 +75,21 @@ class MatchingEngineTest {
         assertEquals(20, need.getQuantityRemaining());
         assertEquals(20, surplus.getQuantityRemaining());
     }
+
+    @Test
+    void shouldPartiallyMatchWhenSurplusIsLesserThanNeed() {
+        //Arrange
+        Listing need = new Listing(1,2,2, ListingType.NEED,20,20, Urgency.HIGH, LocalDate.of(2026,8,30), null,Status.OPEN, LocalDateTime.now());
+        Listing surplus = new Listing(2,5,2,ListingType.SURPLUS,8,8,null,null,LocalDate.of(2026,9,1),Status.OPEN,LocalDateTime.of(2026,8,24,1,1,1,1));
+        MatchingEngine engine = new MatchingEngine();
+
+        //Act
+        engine.submit(need);
+        List<MatchLine> matches =  engine.submit(surplus);
+
+        //Assert
+        assertEquals(1, matches.size());
+        assertEquals(12, need.getQuantityRemaining());
+        assertEquals(0, surplus.getQuantityRemaining());
+    }
 }

@@ -55,4 +55,24 @@ class MatchingEngineTest {
         //Asser
         assertFalse(result);
     }
+
+
+    @Test
+    void shouldNotMatchWhenCategoriesAreDifferent() {
+        //Arrange
+        Listing need = new Listing(1, 2, 1, ListingType.NEED, 20, 20, Urgency.HIGH,
+                LocalDate.of(2026,8,30), null, Status.OPEN, LocalDateTime.now());
+        Listing surplus = new Listing(2, 5, 2, ListingType.SURPLUS, 20, 20, null, null,
+                LocalDate.of(2026,9,1), Status.OPEN, LocalDateTime.of(2026,8,24,1,1,1));
+        MatchingEngine engine = new MatchingEngine();
+
+        //Act
+        engine.submit(need);
+        List<MatchLine> matches = engine.submit(surplus);
+
+        //Assert
+        assertEquals(0, matches.size());
+        assertEquals(20, need.getQuantityRemaining());
+        assertEquals(20, surplus.getQuantityRemaining());
+    }
 }

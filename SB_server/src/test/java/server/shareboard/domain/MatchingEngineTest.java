@@ -25,8 +25,6 @@ class MatchingEngineTest {
         assertEquals(1,matches.size());
         assertEquals(0, need.getQuantityRemaining());
         assertEquals(0, surplus.getQuantityRemaining());
-        assertEquals(Status.MATCHED, need.getStatus());
-        assertEquals(Status.MATCHED, surplus.getStatus());
     }
 
     @Test

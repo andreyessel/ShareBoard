@@ -3,7 +3,7 @@ CREATE DATABASE shareboard;
 USE shareboard;
 
 CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(30) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     is_organization BOOLEAN NOT NULL DEFAULT FALSE,
@@ -27,7 +27,7 @@ CREATE TABLE listing (
     available_until DATE NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'OPEN',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (category_id) REFERENCES category(id)
 );
 

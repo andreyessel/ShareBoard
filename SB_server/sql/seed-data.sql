@@ -3,7 +3,7 @@ USE shareboard;
 INSERT INTO category (name) VALUES
 ('Blankets'), ('Canned Food'), ('Baby Formula'), ('Coats'), ('School Supplies');
 
-INSERT INTO user (username, password_hash, is_organization) VALUES
+INSERT INTO `user` (username, password_hash, is_organization) VALUES
 ('riverside_shelter', 'hash1', TRUE),
 ('corner_market', 'hash2', TRUE),
 ('hope_nursery', 'hash3', TRUE),

@@ -143,7 +143,7 @@ class MatchingEngineTest {
         //Arrange
         Listing need1 = new Listing(1,2,2, ListingType.NEED,10,10, Urgency.HIGH, LocalDate.of(2026,8,30), null,Status.OPEN, LocalDateTime.now());
         Listing need2 = new Listing(2,5,2,ListingType.NEED,9,9,Urgency.HIGH,LocalDate.of(2026,9,2),null,Status.OPEN,LocalDateTime.of(2026,8,26,1,0,1,0));
-        Listing surplus = new Listing(3,4,2,ListingType.SURPLUS,30,30,null,null,LocalDate.of(2026,9,4),Status.OPEN,LocalDateTime.of(2026,8,24,1,1,1,1));
+        Listing surplus = new Listing(3,4,2,ListingType.SURPLUS,12,12,null,null,LocalDate.of(2026,9,4),Status.OPEN,LocalDateTime.of(2026,8,24,1,1,1,1));
         MatchingEngine engine = new MatchingEngine();
 
         //Act
@@ -154,7 +154,10 @@ class MatchingEngineTest {
         //Assert
         assertEquals(2, matches.size());
         assertEquals(0, need1.getQuantityRemaining());
-        assertEquals(0, need2.getQuantityRemaining());
-        assertEquals(11, surplus.getQuantityRemaining());
+        assertEquals(7, need2.getQuantityRemaining());
+        assertEquals(0, surplus.getQuantityRemaining());
+        assertEquals(Status.MATCHED, need1.getStatus());
+        assertEquals(Status.MATCHED, surplus.getStatus());
+        assertEquals(Status.PARTIALLY_MATCHED, need2.getStatus());
     }
 }

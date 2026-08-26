@@ -13,17 +13,22 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class MatchingEngine {
+    
     //Comparator for need
     Comparator<Listing> byNeedPriority = Comparator.comparing((Listing l) -> l.getUrgency()).reversed()
             .thenComparing(l -> l.getNeededBy())
             .thenComparing(l -> l.getCreatedAt());
 
+
     //Comparator for surplus
     Comparator<Listing> bySurplusPriority =Comparator.comparing((Listing l) -> l.getAvailableUntil())
             .thenComparing(Comparator.comparing((Listing l) -> l.getQuantityRemaining()).reversed());
 
+
     PriorityQueue<Listing> needQueue = new PriorityQueue<>(byNeedPriority);
     PriorityQueue<Listing> surplusQueue = new PriorityQueue<>(bySurplusPriority);
+
+
 
     //submitting a listing
     public List<MatchLine> submit(Listing listing){
@@ -45,6 +50,8 @@ public class MatchingEngine {
 
         return matches;
     }
+
+
 
     //matching a listing
     private List<MatchLine> attemptMatch(Listing listing) {
@@ -89,6 +96,7 @@ public class MatchingEngine {
         opposite.addAll(skipped);
         return matches;
     }
+
 
     //checking which listing has cross the deadline
     public boolean datesAreCompatible(LocalDate neededBy, LocalDate availableUntil){

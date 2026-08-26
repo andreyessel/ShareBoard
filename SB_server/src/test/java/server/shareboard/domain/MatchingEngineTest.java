@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import server.shareboard.models.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,8 +14,8 @@ class MatchingEngineTest {
     @Test
     void shouldFullyMatchWhenQuantitiesAreEqual() {
         //Arrange
-        Listing need = new Listing(1,2,2, ListingType.NEED,20,20, Urgency.HIGH, LocalDate.of(2026,8,30), null,Status.OPEN,LocalDate.now());
-        Listing surplus = new Listing(2,5,2,ListingType.SURPLUS,20,20,null,null,LocalDate.of(2026,9,1),Status.OPEN,LocalDate.of(2026,8,24));
+        Listing need = new Listing(1,2,2, ListingType.NEED,20,20, Urgency.HIGH, LocalDate.of(2026,8,30), null,Status.OPEN, LocalDateTime.now());
+        Listing surplus = new Listing(2,5,2,ListingType.SURPLUS,20,20,null,null,LocalDate.of(2026,9,1),Status.OPEN,LocalDateTime.of(2026,8,24,1,1,1,1));
         MatchingEngine engine = new MatchingEngine();
 
         //Act

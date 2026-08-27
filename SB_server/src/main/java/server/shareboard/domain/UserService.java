@@ -14,6 +14,7 @@ public class UserService {
         this.repository = repository;
     }
 
+
     public Result<User> findById(int userId) {
         Result<User> result = new Result<>();
 
@@ -30,6 +31,7 @@ public class UserService {
         }
         return result;
     }
+
 
     public Result<User> findByUsername(String username) {
         User found = repository.findByUsername(username);

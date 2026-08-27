@@ -1,6 +1,5 @@
 package server.shareboard.domain;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import server.shareboard.data.UserRepository;
 import server.shareboard.models.User;

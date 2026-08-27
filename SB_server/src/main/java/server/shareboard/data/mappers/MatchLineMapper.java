@@ -9,6 +9,12 @@ import java.sql.SQLException;
 public class MatchLineMapper implements RowMapper<MatchLine> {
     @Override
     public MatchLine mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return null;
+        return new MatchLine(
+                rs.getInt("id"),
+                rs.getInt("need_listing_id"),
+                rs.getInt("surplus_listing_id"),
+                rs.getInt("quantity_matched"),
+                rs.getTimestamp("matched_at").toLocalDateTime()
+        );
     }
 }

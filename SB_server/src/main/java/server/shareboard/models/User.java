@@ -1,6 +1,7 @@
 package server.shareboard.models;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class User {
     private int userId;
@@ -8,7 +9,6 @@ public class User {
     private String passwordHash;
     private boolean isOrganization;
     private LocalDateTime createdAt;
-
 
     public User(int userId, String username, String passwordHash, boolean isOrganization, LocalDateTime createdAt) {
         this.userId = userId;
@@ -56,5 +56,16 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof User user)) return false;
+        return userId == user.userId && isOrganization == user.isOrganization && Objects.equals(username, user.username) && Objects.equals(passwordHash, user.passwordHash) && Objects.equals(createdAt, user.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, passwordHash, isOrganization, createdAt);
     }
 }

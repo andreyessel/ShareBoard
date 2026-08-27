@@ -38,7 +38,7 @@ class UserJdbcClientRepositoryTest {
 
     //unhappy path
     @Test
-    void shouldReturnNullWhenUserDoesNotExist() {
+    void shouldReturnNullWhenUserIdDoesNotExist() {
         //Act
         User notUser = repository.findById(8888);
 
@@ -46,5 +46,27 @@ class UserJdbcClientRepositoryTest {
         assertNull(notUser);
     }
 
+    //happy path
+    @Test
+    void shouldFindExistingUserByUsername() {
+        //Act
+        User user = repository.findByUsername("test_org");
+
+        //Assert
+        assertNotNull(user);
+        assertEquals(1, user.getUserId());
+    }
+
+    //unhappy path
+    @Test
+    void shouldReturnNullWhenUsernameDoes() {
+        //Act
+        User notUser = repository.findByUsername("notAUser");
+        User nullUser = repository.findByUsername(null);
+
+        //Assert
+        assertNull(notUser);
+        assertNull(nullUser);
+    }
 
 }

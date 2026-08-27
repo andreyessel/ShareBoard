@@ -48,4 +48,33 @@ class UserServiceTest {
         assertFalse(result.isSuccess());
         assertEquals(ResultType.NOT_FOUND, result.getResultType());
     }
+
+    //happy path
+    @Test
+    void findByUsernameHappyPath() {
+        //Arrange
+        User expected = TestDataHelper.existingUser();
+        when(repository.findByUsername("existingUser")).thenReturn(expected);
+
+        //Act
+        Result<User> result = service.findByUsername("existingUser");
+
+        //Assert
+        assertTrue(result.isSuccess());
+        assertEquals(expected, result.getPayload());
+    }
+
+    //unhappy path
+    @Test
+    void findByUsernameNotFound(){
+        //Arrange
+        when(repository.findByUsername("null")).thenReturn(null);
+
+        //Act
+        Result<User> result = service.findByUsername("null");
+
+        //Assert
+        assertFalse(result.isSuccess());
+        assertEquals(ResultType.NOT_FOUND, result.getResultType());
+    }
 }

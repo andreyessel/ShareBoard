@@ -1,0 +1,50 @@
+package server.shareboard.data;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import server.shareboard.models.User;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+class UserJdbcClientRepositoryTest {
+
+    @Autowired
+    private UserJdbcClientRepository repository;
+
+    @Autowired
+    private JdbcClient jdbcClient;
+
+    @BeforeEach
+    void setup() {
+        jdbcClient.sql("call set_known_good_state();").update();
+    }
+
+    //happy path
+    @Test
+    void shouldFindByUserId() {
+        //Act
+        User user = repository.findById(1);
+
+        //Assert
+        assertNotNull(user);
+        assertEquals(1,user.getUserId());
+        assertEquals("test_org", user.getUsername());
+        assertTrue(user.isOrganization());
+    }
+
+    //unhappy path
+    @Test
+    void shouldReturnNullWhenUserDoesNotExist() {
+        //Act
+        User notUser = repository.findById(8888);
+
+        //Assert
+        assertNull(notUser);
+    }
+
+
+}

@@ -15,7 +15,6 @@ public class UserService {
     }
 
     public Result<User> findById(int userId) {
-        User found = repository.findById(userId);
         Result<User> result = new Result<>();
 
         if (userId <= 0) {
@@ -23,8 +22,21 @@ public class UserService {
             return result;
         }
 
+        User found = repository.findById(userId);
         if (found == null){
             result.addErrorMessage("User not found",ResultType.NOT_FOUND);
+        } else {
+            result.setPayload(found);
+        }
+        return result;
+    }
+
+    public Result<User> findByUsername(String username) {
+        User found = repository.findByUsername(username);
+        Result<User> result = new Result<>();
+
+        if (found == null) {
+            result.addErrorMessage("User not found", ResultType.NOT_FOUND);
         } else {
             result.setPayload(found);
         }

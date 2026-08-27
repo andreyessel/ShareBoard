@@ -30,11 +30,11 @@ public class Result <T> {
         return this.resultType;
     }
 
-    public T getpayload() {
+    public T getPayload() {
         return payload;
     }
 
-    public void setpayload(T payload) {
+    public void setPayload(T payload) {
         this.payload = payload;
     }
 

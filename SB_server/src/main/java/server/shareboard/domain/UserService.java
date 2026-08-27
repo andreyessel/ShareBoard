@@ -2,16 +2,16 @@ package server.shareboard.domain;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import server.shareboard.data.UserJdbcClientRepository;
+import server.shareboard.data.UserRepository;
 import server.shareboard.models.User;
 
 @Service
 public class UserService {
 
-    private final UserJdbcClientRepository repository;
+    private final UserRepository repository;
 
 
-    public UserService(UserJdbcClientRepository repository) {
+    public UserService(UserRepository repository) {
         this.repository = repository;
     }
 

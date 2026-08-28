@@ -9,7 +9,7 @@ public interface ListingRepository {
 
     List<Listing> findAll();
 
-    Optional<Listing> findById(int listingId);
+    Listing findById(int listingId);
 
     List<Listing> findByUserId(int userId);
 

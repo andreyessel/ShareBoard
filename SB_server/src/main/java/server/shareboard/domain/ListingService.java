@@ -21,7 +21,7 @@ public class ListingService {
         this.matchLineRepository = matchLineRepository;
     }
 
-    Result<Listing> createListing(Listing listing) {
+   public Result<Listing> createListing(Listing listing) {
         Result<Listing> result = new Result<>();
 
         //Validating a listing to be created

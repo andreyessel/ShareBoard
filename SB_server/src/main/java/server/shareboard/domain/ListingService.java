@@ -49,6 +49,10 @@ public class ListingService {
             return result;
         }
         Listing created = repository.createListing(listing);
+        if (created == null){
+            result.addErrorMessage("user can not be null", ResultType.INVALID);
+            return result;
+        }
 
      List<MatchLine> matches = matchingEngine.submit(created);
 

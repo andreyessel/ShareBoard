@@ -3,12 +3,13 @@ package server.shareboard.data;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import server.shareboard.data.mappers.ListingMapper;
 import server.shareboard.models.Listing;
 
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public class ListingJdbcClientRepository implements ListingRepository{
 
     private final JdbcClient jdbcClient;
@@ -39,7 +40,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
     }
 
     @Override
-    public Listing create(Listing listing) {
+    public Listing createListing(Listing listing) {
         final String sql = """
                 insert into listing ( user_id, category_id, type, quantity, quantity_remaining, urgency, needed_by, available_until, status)
                 values( :user_id, :category_id, :type, :quantity, :quantity_remaining, :urgency, :needed_by, :available_until, :status);

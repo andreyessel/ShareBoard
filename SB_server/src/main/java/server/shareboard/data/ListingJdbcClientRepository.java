@@ -2,7 +2,6 @@ package server.shareboard.data;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.JdbcAccessor;
 import org.springframework.jdbc.support.KeyHolder;
 import server.shareboard.data.mappers.ListingMapper;
 import server.shareboard.models.Listing;
@@ -50,13 +49,13 @@ public class ListingJdbcClientRepository implements ListingRepository{
         int rowsAffectedo = jdbcClient.sql(sql)
                 .param("user_id", listing.getUserId())
                 .param("category_id", listing.getCategoryId())
-                .param("type", listing.getType())
+                .param("type", listing.getType().name())
                 .param("quantity", listing.getQuantity())
                 .param("quantity_remaining", listing.getQuantityRemaining())
-                .param("urgency", listing.getUrgency())
+                .param("urgency", listing.getUrgency() != null ? listing.getUrgency().name() : null)
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
-                .param("status ", listing.getStatus())
+                .param("status", listing.getStatus().name())
                 .update(keyHolder, "id");
 
         if (rowsAffectedo == 0) {
@@ -79,6 +78,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 needed_by = :needed_by,
                 available_until = :available_until,
                 status = :status
+                where id = :id
                 """)
                 .param("user_id", listing.getUserId())
                 .param("category_id", listing.getCategoryId())
@@ -88,7 +88,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("urgency", listing.getUrgency())
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
-                .param("status ", listing.getStatus())
+                .param("status", listing.getStatus())
                 .update() > 0;
     }
 

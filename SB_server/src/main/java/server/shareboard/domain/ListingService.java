@@ -59,10 +59,8 @@ public class ListingService {
      for (MatchLine match : matches){
          matchLineRepository.create(match);
      }
-
      //after mutations
         repository.update(created);
-
 
         result.setPayload(created);
         return result;

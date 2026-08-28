@@ -87,7 +87,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("type", listing.getType().toString())
                 .param("quantity", listing.getQuantity())
                 .param("quantity_remaining", listing.getQuantityRemaining())
-                .param("urgency", listing.getUrgency().toString())
+                .param("urgency", listing.getUrgency() == null ? null : listing.getUrgency().name())
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
                 .param("status", listing.getStatus().toString())

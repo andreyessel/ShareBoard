@@ -6,6 +6,7 @@ import server.shareboard.data.MatchLineRepository;
 import server.shareboard.models.Listing;
 import server.shareboard.models.MatchLine;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -48,7 +49,9 @@ public class ListingService {
             result.addErrorMessage("listingId cannot be set for `create` operation", ResultType.INVALID);
             return result;
         }
-        Listing created = repository.create(listing);
+
+       listing.setCreatedAt(LocalDateTime.now());
+       Listing created = repository.create(listing);
         if (created == null){
             result.addErrorMessage("user can not be null", ResultType.INVALID);
             return result;

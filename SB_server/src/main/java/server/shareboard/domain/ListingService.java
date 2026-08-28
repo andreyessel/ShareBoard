@@ -81,4 +81,11 @@ public class ListingService {
         }
         return result;
     }
+
+    public Result<List<Listing>> findAll(){
+        Result<List<Listing>> result = new Result<>();
+        List<Listing> listings = repository.findAll();
+        result.setPayload(listings);
+        return result;
+    }
 }

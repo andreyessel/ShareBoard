@@ -40,7 +40,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
     }
 
     @Override
-    public Listing createListing(Listing listing) {
+    public Listing create(Listing listing) {
         final String sql = """
                 insert into listing ( user_id, category_id, type, quantity, quantity_remaining, urgency, needed_by, available_until, status)
                 values( :user_id, :category_id, :type, :quantity, :quantity_remaining, :urgency, :needed_by, :available_until, :status);

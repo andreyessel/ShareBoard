@@ -9,5 +9,5 @@ public interface CategoryRepository {
 
     List<Category> findAll();
 
-    Optional<Category> findById(int categoryId);
+    Category findById(int categoryId);
 }

@@ -13,7 +13,9 @@ public class CategoryJdbcClientRepository implements CategoryRepository{
     }
 
     @Override
-    public Optional<Category> findById(int categoryId) {
-        return Optional.empty();
+    public Category findById(int categoryId) {
+        return null;
     }
+
+
 }

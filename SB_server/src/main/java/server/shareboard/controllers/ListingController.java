@@ -7,6 +7,8 @@ import server.shareboard.domain.ListingService;
 import server.shareboard.domain.Result;
 import server.shareboard.models.Listing;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/listings")
 public class ListingController {
@@ -36,6 +38,12 @@ public class ListingController {
             return ErrorResponse.build(result);
         }
 
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> findAll(){
+        Result<List<Listing>> result = service.findAll();
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
 }

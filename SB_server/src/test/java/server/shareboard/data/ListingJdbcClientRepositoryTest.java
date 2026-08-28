@@ -80,16 +80,32 @@ class ListingJdbcClientRepositoryTest {
     //happy path
     @Test
     void shouldCreateANewUser() {
-        //Arrange
-        Listing listing = TestDataHelper.listingToCreate();
-
         //Act
-        Listing actual = repository.createListing(listing);
+        Listing actual = repository.createListing(TestDataHelper.listingToCreate());
 
         //Assert
         assertNotNull(actual);
         assertEquals(3,actual.getListingId());
+    }
 
+    @Test
+    void shouldUpdate() {
+        // Arrange
+        Listing listing = TestDataHelper.listingToCreate();
+
+        // Act & Assert — happy path
+        listing.setListingId(1);
+        assertTrue(repository.update(listing));
+
+        // Act & Assert — unhappy path
+        listing.setListingId(999);
+        assertFalse(repository.update(listing));
+    }
+
+    @Test
+    void shouldDelete() {
+        assertTrue(repository.deleteById(1));
+        assertFalse(repository.deleteById(1));
     }
 
 }

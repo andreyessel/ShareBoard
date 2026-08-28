@@ -40,7 +40,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
     }
 
     @Override
-    public Listing createListing(Listing listing) {
+    public Listing create(Listing listing) {
         final String sql = """
                 insert into listing ( user_id, category_id, type, quantity, quantity_remaining, urgency, needed_by, available_until, status)
                 values( :user_id, :category_id, :type, :quantity, :quantity_remaining, :urgency, :needed_by, :available_until, :status);
@@ -87,7 +87,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("type", listing.getType().toString())
                 .param("quantity", listing.getQuantity())
                 .param("quantity_remaining", listing.getQuantityRemaining())
-                .param("urgency", listing.getUrgency().toString())
+                .param("urgency", listing.getUrgency() == null ? null : listing.getUrgency().name())
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
                 .param("status", listing.getStatus().toString())

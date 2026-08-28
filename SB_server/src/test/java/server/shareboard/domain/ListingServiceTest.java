@@ -15,6 +15,6 @@ class ListingServiceTest {
     @MockBean
     ListingRepository repository;
 
-
+    
 
 }

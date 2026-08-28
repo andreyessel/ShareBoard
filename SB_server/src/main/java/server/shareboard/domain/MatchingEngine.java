@@ -1,5 +1,6 @@
 package server.shareboard.domain;
 
+import org.springframework.stereotype.Component;
 import server.shareboard.models.Listing;
 import server.shareboard.models.ListingType;
 import server.shareboard.models.MatchLine;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-
+@Component
 public class MatchingEngine {
     
     //Comparator for need
@@ -34,7 +35,7 @@ public class MatchingEngine {
     public List<MatchLine> submit(Listing listing){
         List<MatchLine> matches = new ArrayList<>();
 
-        if(listing.getType() == ListingType.NEED){
+        if(listing.getType() == ListingType.NEED ){
           matches = attemptMatch(listing);
 
            if(listing.getQuantityRemaining() > 0) {

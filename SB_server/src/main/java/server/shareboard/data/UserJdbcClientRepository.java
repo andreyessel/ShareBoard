@@ -25,7 +25,7 @@ public class UserJdbcClientRepository implements UserRepository{
                 .query(new UserMapper())
                 .optional().orElse(null);
     }
-
+// use rows
     @Override
     public User findByUsername(String username) {
         return jdbcClient.sql("select * from `user` where username = ?")

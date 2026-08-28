@@ -8,7 +8,7 @@ import server.shareboard.data.mappers.ListingMapper;
 import server.shareboard.models.Listing;
 
 import java.util.List;
-import java.util.Optional;
+
 @Repository
 public class ListingJdbcClientRepository implements ListingRepository{
 
@@ -47,7 +47,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 """;
 
         KeyHolder keyHolder= new GeneratedKeyHolder();
-        int rowsAffectedo = jdbcClient.sql(sql)
+        int rowsAffected = jdbcClient.sql(sql)
                 .param("user_id", listing.getUserId())
                 .param("category_id", listing.getCategoryId())
                 .param("type", listing.getType().name())
@@ -59,7 +59,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("status", listing.getStatus().name())
                 .update(keyHolder, "id");
 
-        if (rowsAffectedo == 0) {
+        if (rowsAffected == 0) {
             return null;
         }
      listing.setListingId(keyHolder.getKey().intValue());
@@ -81,15 +81,16 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 status = :status
                 where id = :id
                 """)
+                .param("id", listing.getListingId())
                 .param("user_id", listing.getUserId())
                 .param("category_id", listing.getCategoryId())
-                .param("type", listing.getType())
+                .param("type", listing.getType().toString())
                 .param("quantity", listing.getQuantity())
                 .param("quantity_remaining", listing.getQuantityRemaining())
-                .param("urgency", listing.getUrgency())
+                .param("urgency", listing.getUrgency().toString())
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
-                .param("status", listing.getStatus())
+                .param("status", listing.getStatus().toString())
                 .update() > 0;
     }
 

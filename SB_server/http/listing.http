@@ -1,0 +1,33 @@
+@base_url = http://localhost:8080/api/listings
+
+### happy path: create a need
+POST  {{base_url}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "categoryId": 1,
+  "type": "NEED",
+  "quantity": 10,
+  "quantityRemaining": 10,
+  "urgency": "HIGH",
+  "neededBy": "2026-09-01",
+  "status": "OPEN"
+}
+
+### Happy path: Create a SURPLUS
+POST {{base_url}}
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "categoryId": 1,
+  "type": "SURPLUS",
+  "quantity": 100,
+  "quantityRemaining": 100,
+  "availableUntil": "2026-09-10",
+  "status": "OPEN"
+}
+
+### happy path: find by id
+

@@ -23,7 +23,7 @@ public class MatchingEngine {
 
     //Comparator for surplus
     Comparator<Listing> bySurplusPriority =Comparator.comparing((Listing l) -> l.getAvailableUntil())
-            .thenComparing(Comparator.comparing((Listing l) -> l.getQuantityRemaining()).reversed());
+            .thenComparing(Comparator.comparing((Listing l) -> l.getQuantityRemaining()));
 
 
     PriorityQueue<Listing> needQueue = new PriorityQueue<>(byNeedPriority);

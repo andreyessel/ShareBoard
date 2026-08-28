@@ -54,13 +54,14 @@ public class ListingService {
             return result;
         }
 
-     List<MatchLine> matches = matchingEngine.submit(created);
+     MatchResult matchResult = matchingEngine.submit(created);
 
-     for (MatchLine match : matches){
+     for (MatchLine match : matchResult.getMatches()){
          matchLineRepository.create(match);
      }
-     //after mutations
-        repository.update(created);
+       for (Listing updated : matchResult.getUpdatedListings()) {
+           repository.update(updated);
+       }
 
         result.setPayload(created);
         return result;

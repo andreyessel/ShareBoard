@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service;
 import server.shareboard.data.ListingRepository;
 import server.shareboard.data.MatchLineRepository;
 import server.shareboard.models.Listing;
+import server.shareboard.models.MatchLine;
+
+import java.util.List;
 
 @Service
 public class ListingService {
@@ -47,10 +50,29 @@ public class ListingService {
         }
         Listing created = repository.createListing(listing);
 
-//        MatchResult matchResult = matchingEngine.submit(created);
+     List<MatchLine> matches = matchingEngine.submit(created);
+
+     for (MatchLine match : matches){
+         matchLineRepository.create(match);
+     }
+
+     //after mutations
+        repository.update(created);
 
 
         result.setPayload(created);
+        return result;
+    }
+
+
+    public Result<Listing> findById(int listingId) {
+        Result<Listing> result = new Result<>();
+        Listing found = repository.findById(listingId);
+        if (found == null) {
+            result.addErrorMessage("Listing not found", ResultType.NOT_FOUND);
+        } else {
+            result.setPayload(found);
+        }
         return result;
     }
 }

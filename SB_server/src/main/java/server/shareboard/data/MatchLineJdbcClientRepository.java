@@ -3,10 +3,11 @@ package server.shareboard.data;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import server.shareboard.models.MatchLine;
 
 import java.util.List;
-
+@Repository
 public class MatchLineJdbcClientRepository implements MatchLineRepository{
 
     private final JdbcClient jdbcClient;

@@ -21,7 +21,7 @@ public class ListingService {
         this.matchLineRepository = matchLineRepository;
     }
 
-   public Result<Listing> createListing(Listing listing) {
+   public Result<Listing> create(Listing listing) {
         Result<Listing> result = new Result<>();
 
         //Validating a listing to be created
@@ -48,17 +48,20 @@ public class ListingService {
             result.addErrorMessage("listingId cannot be set for `create` operation", ResultType.INVALID);
             return result;
         }
-        Listing created = repository.createListing(listing);
+        Listing created = repository.create(listing);
+        if (created == null){
+            result.addErrorMessage("user can not be null", ResultType.INVALID);
+            return result;
+        }
 
-     List<MatchLine> matches = matchingEngine.submit(created);
+     MatchResult matchResult = matchingEngine.submit(created);
 
-     for (MatchLine match : matches){
+     for (MatchLine match : matchResult.getMatches()){
          matchLineRepository.create(match);
      }
-
-     //after mutations
-        repository.update(created);
-
+       for (Listing updated : matchResult.getUpdatedListings()) {
+           repository.update(updated);
+       }
 
         result.setPayload(created);
         return result;

@@ -69,28 +69,24 @@ public class ListingJdbcClientRepository implements ListingRepository{
     @Override
     public boolean update(Listing listing) {
         return jdbcClient.sql("""
-                update listing set
-                user_id = :user_id,
-                category_id = :category_id,
-                type = :type,
-                quantity = :quantity,
-                quantity_remaining = :quantity_remaining,
-                urgency = :urgency,
-                needed_by = :needed_by,
-                available_until = :available_until,
-                status = :status
-                where id = :id
-                """)
+            update listing set
+            category_id = :category_id,
+            quantity = :quantity,
+            quantity_remaining = :quantity_remaining,
+            urgency = :urgency,
+            needed_by = :needed_by,
+            available_until = :available_until,
+            status = :status
+            where id = :id
+            """)
                 .param("id", listing.getListingId())
-                .param("user_id", listing.getUserId())
                 .param("category_id", listing.getCategoryId())
-                .param("type", listing.getType().toString())
                 .param("quantity", listing.getQuantity())
                 .param("quantity_remaining", listing.getQuantityRemaining())
                 .param("urgency", listing.getUrgency() == null ? null : listing.getUrgency().name())
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
-                .param("status", listing.getStatus().toString())
+                .param("status", listing.getStatus().name())
                 .update() > 0;
     }
 

@@ -46,4 +46,8 @@ public class ListingController {
         Result<List<Listing>> result = service.findAll();
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
-}
+
+    @GetMapping("/mine?userId=")
+    public ResponseEntity<?> findByUserId(@PathVariable int userId){
+          Result<Listing> result = service.findByUser
+        }

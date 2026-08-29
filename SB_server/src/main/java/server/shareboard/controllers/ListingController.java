@@ -47,8 +47,8 @@ public class ListingController {
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
 
-    @GetMapping("/mine")
-    public ResponseEntity<?> findByUserId(@RequestParam int userId) {
+    @GetMapping("/myListings")
+    public ResponseEntity<?> findByUserId(@RequestParam("userId") int userId) {
         Result<List<Listing>> result = service.findByUserId(userId);
         if (!result.isSuccess()) {
             return ErrorResponse.build(result);

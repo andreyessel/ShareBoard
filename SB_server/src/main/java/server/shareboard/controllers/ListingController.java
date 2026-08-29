@@ -68,4 +68,14 @@ public class ListingController {
         }
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{listingId}")
+    public ResponseEntity<?> deleteById(@PathVariable("listingId") int listingId,
+                                        @RequestParam("requesterId") int requesterId) {
+        Result<Listing> result = service.deleteById(listingId, requesterId);
+        if(!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
 }

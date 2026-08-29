@@ -42,12 +42,17 @@ public class ListingController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(){
         Result<List<Listing>> result = service.findAll();
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
+
+    @GetMapping("/mine")
+    public ResponseEntity<?> findByUserId(@RequestParam int userId) {
+        Result<List<Listing>> result = service.findByUserId(userId);
+        if (!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
 }
-//    @GetMapping("/mine?userId=")
-//    public ResponseEntity<?> findByUserId(@PathVariable int userId){
-//          Result<Listing> result = service.findByUser
-//        }

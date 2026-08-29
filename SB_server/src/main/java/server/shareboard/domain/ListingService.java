@@ -41,7 +41,7 @@ public class ListingService {
         if (listing.getType() == null) {
             result.addErrorMessage("type is required", ResultType.INVALID);
         }
-        if (listing.getQuantityRemaining() <= 0 ) {
+        if (listing.getQuantity() <= 0 ) {
             result.addErrorMessage("quantity must be greater than 0", ResultType.INVALID);
         }
         if (!result.isSuccess()){
@@ -52,6 +52,7 @@ public class ListingService {
             return result;
         }
 
+       listing.setQuantityRemaining(listing.getQuantity());
        listing.setCreatedAt(LocalDateTime.now());
        Listing created = repository.create(listing);
         if (created == null){

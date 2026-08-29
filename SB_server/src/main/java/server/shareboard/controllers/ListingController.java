@@ -55,4 +55,7 @@ public class ListingController {
         }
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
+
+    @PutMapping
+    public ResponseEntity<?> update
 }

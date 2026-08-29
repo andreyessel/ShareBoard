@@ -67,5 +67,8 @@ class ListingServiceTest {
         assertEquals(1, result.getPayload().size());
         assertEquals(1, result.getPayload().get(0).getUserId());
     }
+
+    @Test
+    void shouldUpdateAnExistingListing() {}
 }
 

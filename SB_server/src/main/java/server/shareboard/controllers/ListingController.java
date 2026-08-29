@@ -56,6 +56,16 @@ public class ListingController {
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
 
-    @PutMapping
-    public ResponseEntity<?> update
+
+    @PutMapping("/{listingId}")
+    public ResponseEntity<?> update(@PathVariable("listingId") int listingId,
+                                    @RequestParam("requesterId") int requesterId,
+                                    @RequestBody Listing listing) {
+        listing.setListingId(listingId);
+        Result<Listing> result = service.update(listing, requesterId);
+        if (!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
 }

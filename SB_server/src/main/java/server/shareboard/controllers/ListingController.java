@@ -76,6 +76,6 @@ public class ListingController {
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);
         }
-        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

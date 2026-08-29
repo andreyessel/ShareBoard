@@ -71,23 +71,65 @@ class ListingServiceTest {
     @Test
     void shouldUpdateAnExistingListing() {
         //Arrange
-        Listing listing = new Listing(1, 2, 1, ListingType.NEED, 10, 10, Urgency.HIGH, LocalDate.of(2026, 9, 1), null, Status.OPEN, java.time.LocalDateTime.now());
-       int requesterId = listing.getUserId();
-       listing.setQuantity(18);
-        service.update(listing, requesterId);
+        Listing listing = new Listing(0, 2, 1, ListingType.NEED, 10, 10, Urgency.HIGH, LocalDate.of(2026, 9, 1), null, Status.OPEN, java.time.LocalDateTime.now());
+        Result<Listing> createResult = service.create(listing);
+        int listingId = createResult.getPayload().getListingId();
+
+        Listing edited = new Listing(listingId, 2, 1, ListingType.NEED, 18, 18, Urgency.MEDIUM, LocalDate.of(2026, 9, 15), null, Status.OPEN, java.time.LocalDateTime.now());
 
         //Act
-        Result<Listing> result = new Result<>();
+        Result<Listing> result = service.update(edited, 2);
 
         //Assert
-        assertEquals(2,listing.getUserId());
-        assertEquals(2,requesterId);
-        assertEquals(Status.OPEN,listing.getStatus());
-        assertEquals(18, listing.getQuantity());
+        assertTrue(result.isSuccess());
+        assertEquals(18, result.getPayload().getQuantity());
+        assertEquals(Urgency.MEDIUM, result.getPayload().getUrgency());
 
-
+        Listing persisted = repository.findById(listingId);
+        assertEquals(18, persisted.getQuantity());
     }
 
-    //shoulddeletebyid
+    @Test
+    void shouldDeleteByIdWhenRequesterOwnsIt() {
+        //Arrange
+        Listing listing = new Listing(0, 2, 1, ListingType.NEED, 10, 10, Urgency.HIGH,
+                LocalDate.of(2026, 9, 1), null, Status.OPEN, java.time.LocalDateTime.now());
+        Result<Listing> createResult = service.create(listing);
+        int listingId = createResult.getPayload().getListingId();
+
+        //Act
+        Result<Listing> result = service.deleteById(listingId, 2);
+
+        //Assert
+        assertTrue(result.isSuccess());
+        assertNull(repository.findById(listingId));
+    }
+
+    @Test
+    void shouldNotDeleteWhenRequesterIsNotTheOwner() {
+        //Arrange
+        Listing listing = new Listing(0, 2, 1, ListingType.NEED, 10, 10, Urgency.HIGH,
+                LocalDate.of(2026, 9, 1), null, Status.OPEN, java.time.LocalDateTime.now());
+        Result<Listing> createResult = service.create(listing);
+        int listingId = createResult.getPayload().getListingId();
+
+        //Act
+        Result<Listing> result = service.deleteById(listingId, 999);
+
+        //Assert
+        assertFalse(result.isSuccess());
+        assertEquals(ResultType.INVALID, result.getResultType());
+        assertNotNull(repository.findById(listingId));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDeletingListingThatDoesNotExist() {
+        //Act
+        Result<Listing> result = service.deleteById(9999, 2);
+
+        //Assert
+        assertFalse(result.isSuccess());
+        assertEquals(ResultType.NOT_FOUND, result.getResultType());
+    }
 }
 

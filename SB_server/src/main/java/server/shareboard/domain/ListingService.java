@@ -88,4 +88,11 @@ public class ListingService {
         result.setPayload(listings);
         return result;
     }
+
+    public Result<List<Listing>> findByUserId(int userId) {
+        Result<List<Listing>> result = new Result<>();
+      List<Listing> found = repository.findByUserId(userId);
+        result.setPayload(found);
+        return result;
+    }
 }

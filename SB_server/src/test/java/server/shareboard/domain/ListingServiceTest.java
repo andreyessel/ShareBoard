@@ -13,6 +13,7 @@ import server.shareboard.models.Status;
 import server.shareboard.models.Urgency;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -50,6 +51,21 @@ class ListingServiceTest {
         assertEquals(0, SaveSurplus.getQuantityRemaining());
         assertEquals(Status.MATCHED, SaveNeed.getStatus());
         assertEquals(Status.MATCHED, SaveSurplus.getStatus());
+    }
+
+    @Test
+    void shouldFindByUserId() {
+        //Arrange
+        Listing listing = new Listing(0, 2, 1, ListingType.NEED, 10, 10, Urgency.HIGH, LocalDate.of(2026, 9, 1), null, Status.OPEN, java.time.LocalDateTime.now());
+        service.create(listing);
+
+        //Act
+        Result<List<Listing>> result = service.findByUserId(1);
+
+        //Assert
+        assertTrue(result.isSuccess());
+        assertEquals(1, result.getPayload().size());
+        assertEquals(1, result.getPayload().get(0).getUserId());
     }
 }
 

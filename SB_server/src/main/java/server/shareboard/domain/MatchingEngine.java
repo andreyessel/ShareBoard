@@ -23,7 +23,7 @@ public class MatchingEngine {
 
     //Comparator for surplus
     Comparator<Listing> bySurplusPriority =Comparator.comparing((Listing l) -> l.getAvailableUntil())
-            .thenComparing(Comparator.comparing((Listing l) -> l.getQuantityRemaining()).reversed());
+            .thenComparing(Comparator.comparing((Listing l) -> l.getQuantityRemaining()));
 
 
     PriorityQueue<Listing> needQueue = new PriorityQueue<>(byNeedPriority);
@@ -32,70 +32,76 @@ public class MatchingEngine {
 
 
     //submitting a listing
-    public List<MatchLine> submit(Listing listing){
-        List<MatchLine> matches = new ArrayList<>();
+    public MatchResult submit(Listing listing) {
+        MatchResult result;
 
-        if(listing.getType() == ListingType.NEED ){
-          matches = attemptMatch(listing);
-
-           if(listing.getQuantityRemaining() > 0) {
-               needQueue.add(listing);
-           }
-        }else if (listing.getType() == ListingType.SURPLUS) {
-           matches = attemptMatch(listing);
-
-            if(listing.getQuantityRemaining() > 0) {
-            surplusQueue.add(listing);
+        if (listing.getType() == ListingType.NEED) {
+            result = attemptMatch(listing);
+            if (listing.getQuantityRemaining() > 0) {
+                needQueue.add(listing);
+            }
+        } else if (listing.getType() == ListingType.SURPLUS) {
+            result = attemptMatch(listing);
+            if (listing.getQuantityRemaining() > 0) {
+                surplusQueue.add(listing);
+            }
+        } else {
+            result = new MatchResult(new ArrayList<>(), new ArrayList<>());
         }
-        }
 
-        return matches;
+        return result;
     }
 
 
 
     //matching a listing
-    private List<MatchLine> attemptMatch(Listing listing) {
+    private MatchResult attemptMatch(Listing listing) {
         List<MatchLine> matches = new ArrayList<>();
+        List<Listing> updatedListings = new ArrayList<>();
 
         PriorityQueue<Listing> opposite = (listing.getType() == ListingType.NEED)
                 ? surplusQueue : needQueue;
 
         List<Listing> skipped = new ArrayList<>();
 
-        while(listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
-          Listing candidate = opposite.poll();
+        while (listing.getQuantityRemaining() > 0 && !opposite.isEmpty()) {
+            Listing candidate = opposite.poll();
 
-          boolean sameCategory = listing.getCategoryId() == candidate.getCategoryId();
+            boolean sameCategory = listing.getCategoryId() == candidate.getCategoryId();
+            boolean compatible = (listing.getType() == ListingType.NEED)
+                    ? datesAreCompatible(listing.getNeededBy(), candidate.getAvailableUntil())
+                    : datesAreCompatible(candidate.getNeededBy(), listing.getAvailableUntil());
 
-          boolean compatible = (listing.getType() == ListingType.NEED)
-                  ? datesAreCompatible(listing.getNeededBy(), candidate.getAvailableUntil())
-                  : datesAreCompatible(candidate.getNeededBy(), listing.getAvailableUntil());
+            if (!sameCategory || !compatible) {
+                skipped.add(candidate);
+            } else {
+                int matchedQuantity = Math.min(listing.getQuantityRemaining(), candidate.getQuantityRemaining());
+                listing.setQuantityRemaining(listing.getQuantityRemaining() - matchedQuantity);
+                candidate.setQuantityRemaining(candidate.getQuantityRemaining() - matchedQuantity);
 
-//continuing tomorrow
-          if(!sameCategory || !compatible){
-            skipped.add(candidate);
-          }else{
-           int matchedQuantity = Math.min(listing.getQuantityRemaining(), candidate.getQuantityRemaining() );
-           listing.setQuantityRemaining(listing.getQuantityRemaining() - matchedQuantity);
-           candidate.setQuantityRemaining(candidate.getQuantityRemaining() - matchedQuantity);
+                updateStatusAfterMatch(listing);
+                updateStatusAfterMatch(candidate);
 
-           updateStatusAfterMatch(listing);
-           updateStatusAfterMatch(candidate);
+                int needListingId = (listing.getType() == ListingType.NEED) ? listing.getListingId() : candidate.getListingId();
+                int surplusListingId = (listing.getType() == ListingType.SURPLUS) ? listing.getListingId() : candidate.getListingId();
 
-           int needListingId = (listing.getType() == ListingType.NEED) ? listing.getListingId() : candidate.getListingId();
-           int surplusListingId = (listing.getType() == ListingType.SURPLUS) ?  listing.getListingId() : candidate.getListingId();
+                MatchLine match = new MatchLine(0, needListingId, surplusListingId, matchedQuantity, LocalDateTime.now());
+                matches.add(match);
 
-           MatchLine match = new MatchLine(0,needListingId,surplusListingId,matchedQuantity,LocalDateTime.now());
-           matches.add(match);
+                updatedListings.add(candidate);
 
-           if(candidate.getQuantityRemaining() > 0) {
-               skipped.add(candidate);
-           }
-          }
-      }
+                if (candidate.getQuantityRemaining() > 0) {
+                    skipped.add(candidate);
+                }
+            }
+        }
+
+        if (!matches.isEmpty()) {
+            updatedListings.add(listing);
+        }
+
         opposite.addAll(skipped);
-        return matches;
+        return new MatchResult(matches, updatedListings); 
     }
 
 

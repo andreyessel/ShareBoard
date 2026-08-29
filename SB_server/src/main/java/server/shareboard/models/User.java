@@ -10,6 +10,8 @@ public class User {
     private boolean isOrganization;
     private LocalDateTime createdAt;
 
+    public User() {}
+
     public User(int userId, String username, String passwordHash, boolean isOrganization, LocalDateTime createdAt) {
         this.userId = userId;
         this.username = username;

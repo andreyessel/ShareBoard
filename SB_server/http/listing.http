@@ -24,7 +24,7 @@ Content-Type: application/json
   "categoryId": 1,
   "type": "NEED",
   "quantity": 10,
-  "quantityRemaining": 1,
+  "quantityRemaining": 10,
   "urgency": "MEDIUM",
   "neededBy": "2026-09-30",
   "status": "OPEN"
@@ -39,7 +39,7 @@ Content-Type: application/json
   "categoryId": 1,
   "type": "SURPLUS",
   "quantity": 7,
-  "quantityRemaining": 2,
+  "quantityRemaining": 7,
   "availableUntil": "2026-10-10",
   "status": "OPEN"
 }

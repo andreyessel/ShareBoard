@@ -69,4 +69,17 @@ class UserJdbcClientRepositoryTest {
         assertNull(nullUser);
     }
 
+
+    @Test
+    void shouldCreateANewUser() {
+        //Act
+        User newUser = repository.create(TestDataHelper.userToCreate());
+          newUser.setUserId(3);
+
+        //Assert
+        assertEquals(3, newUser.getUserId());
+        assertEquals("newUser", newUser.getUsername());
+    }
+
+
 }

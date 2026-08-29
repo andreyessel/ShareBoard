@@ -69,6 +69,23 @@ class ListingServiceTest {
     }
 
     @Test
-    void shouldUpdateAnExistingListing() {}
+    void shouldUpdateAnExistingListing() {
+        //Arrange
+        Listing listing = new Listing(1, 2, 1, ListingType.NEED, 10, 10, Urgency.HIGH, LocalDate.of(2026, 9, 1), null, Status.OPEN, java.time.LocalDateTime.now());
+       int requesterId = listing.getUserId();
+       listing.setQuantity(18);
+        service.update(listing, requesterId);
+
+        //Act
+        Result<Listing> result = new Result<>();
+
+        //Assert
+        assertEquals(2,listing.getUserId());
+        assertEquals(2,requesterId);
+        assertEquals(Status.OPEN,listing.getStatus());
+        assertEquals(18, listing.getQuantity());
+
+
+    }
 }
 

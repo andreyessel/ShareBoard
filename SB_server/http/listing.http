@@ -45,7 +45,7 @@ Content-Type: application/json
 }
 
 ### happy path: find by id
-GET {{base_url}}/8 HTTP/1.1
+GET {{base_url}}/22 HTTP/1.1
 
 
 ### happy path: find by userId
@@ -64,3 +64,7 @@ Content-Type: application/json
   "availableUntil": "2026-10-19",
   "status": "OPEN"
 }
+
+
+### delete
+DELETE {{base_url}}/22?requesterId=2

@@ -44,4 +44,26 @@ public class UserService {
         }
         return result;
     }
+
+    public Result<User> create(User user) {
+        Result<User> result = new Result<>();
+
+        //validate
+        if (user == null) {
+            result.addErrorMessage("User cannot be null", ResultType.INVALID);
+            return result;
+        }
+        if (user.getPasswordHash() == null || user.getPasswordHash().isBlank())  {
+            result.addErrorMessage("Password cannot be null", ResultType.INVALID);
+            return result;
+        }
+        User created = repository.create(user);
+        if (created == null)  {
+            result.addErrorMessage("Could not create user", ResultType.INVALID);
+            return result;
+        }
+        result.setPayload(created);
+        return result;
+
+    }
 }

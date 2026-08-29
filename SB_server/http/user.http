@@ -14,7 +14,7 @@ POST {{base_url}}
 Content-Type: application/json
 
 {
-  "username": "Fredi wink",
+  "username": "new user",
   "passwordHash": "thispassword",
   "isOrganization": "TRUE"
 }

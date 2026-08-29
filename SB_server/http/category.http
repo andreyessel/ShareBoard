@@ -1,7 +1,9 @@
 @base_url = http://localhost:8080/api/categories
 
 ### happy path: category found by id
-GET {{base_url}}/1 HTTP/1.1
+GET {{base_url}}/3 HTTP/1.1
 
 ### unhappy path :user not found
 GET {{base_url}}/99 HTTP/1.1
+
+GET {{base_url}} HTTP/1.1

@@ -160,4 +160,35 @@ public class ListingService {
         result.setPayload(existing);
         return result;
     }
+
+
+    public Result<Listing> deleteById(int listingId, int requesterId) {
+        Result<Listing> result = new Result<>();
+
+        Listing existing = repository.findById(listingId);
+        if (existing == null) {
+            result.addErrorMessage("Listing not found", ResultType.NOT_FOUND);
+            return result;
+        }
+
+        if (existing.getUserId() != requesterId) {
+            result.addErrorMessage("You can only delete your own listings", ResultType.INVALID);
+            return result;
+        }
+
+        if (existing.getStatus() != Status.OPEN) {
+            result.addErrorMessage("Only OPEN listings can be withdrawn", ResultType.INVALID);
+            return result;
+        }
+
+        boolean deleted = repository.deleteById(listingId);
+        if (!deleted) {
+            result.addErrorMessage("Could not delete listing", ResultType.INVALID);
+            return result;
+        }
+
+        result.setPayload(existing);
+        return result;
+    }
+
 }

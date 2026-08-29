@@ -1,0 +1,7 @@
+@base_url = http://localhost:8080/api/listings
+
+### happy path: category found by id
+GET {{base_url}}/1 HTTP/1.1
+
+### unhappy path :user not found
+GET {{base_url}}/99 HTTP/1.1

@@ -9,6 +9,7 @@ import server.shareboard.data.UserRepository;
 import server.shareboard.models.User;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -76,5 +77,21 @@ class UserServiceTest {
         //Assert
         assertFalse(result.isSuccess());
         assertEquals(ResultType.NOT_FOUND, result.getResultType());
+    }
+
+    @Test
+    void shouldCreateANewUser() {
+        //Arrange
+        User userToCreate = TestDataHelper.userToCreate();
+        User createdUser = TestDataHelper.existingUser();
+
+        when(repository.create(any(User.class))).thenReturn(createdUser);
+
+        //Act
+        Result<User> result = service.create(userToCreate);
+
+        //Assert
+        assertTrue(result.isSuccess());
+        assertEquals(createdUser, result.getPayload());
     }
 }

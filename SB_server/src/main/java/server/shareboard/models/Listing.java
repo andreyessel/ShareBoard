@@ -16,7 +16,8 @@ public class Listing {
     private Status status;
     private LocalDateTime createdAt;
 
-
+    public Listing() {
+    }
     public Listing(int listingId, int userId, int categoryId, ListingType type, int quantity, int quantityRemaining, Urgency urgency, LocalDate neededBy, LocalDate availableUntil, Status status, LocalDateTime createdAt) {
         this.listingId = listingId;
         this.userId = userId;

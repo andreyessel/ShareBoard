@@ -6,6 +6,7 @@ import server.shareboard.data.MatchLineRepository;
 import server.shareboard.models.Listing;
 import server.shareboard.models.MatchLine;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,7 +22,7 @@ public class ListingService {
         this.matchLineRepository = matchLineRepository;
     }
 
-   public Result<Listing> createListing(Listing listing) {
+   public Result<Listing> create(Listing listing) {
         Result<Listing> result = new Result<>();
 
         //Validating a listing to be created
@@ -48,17 +49,22 @@ public class ListingService {
             result.addErrorMessage("listingId cannot be set for `create` operation", ResultType.INVALID);
             return result;
         }
-        Listing created = repository.createListing(listing);
 
-     List<MatchLine> matches = matchingEngine.submit(created);
+       listing.setCreatedAt(LocalDateTime.now());
+       Listing created = repository.create(listing);
+        if (created == null){
+            result.addErrorMessage("user can not be null", ResultType.INVALID);
+            return result;
+        }
 
-     for (MatchLine match : matches){
+     MatchResult matchResult = matchingEngine.submit(created);
+
+     for (MatchLine match : matchResult.getMatches()){
          matchLineRepository.create(match);
      }
-
-     //after mutations
-        repository.update(created);
-
+       for (Listing updated : matchResult.getUpdatedListings()) {
+           repository.update(updated);
+       }
 
         result.setPayload(created);
         return result;
@@ -73,6 +79,13 @@ public class ListingService {
         } else {
             result.setPayload(found);
         }
+        return result;
+    }
+
+    public Result<List<Listing>> findAll(){
+        Result<List<Listing>> result = new Result<>();
+        List<Listing> listings = repository.findAll();
+        result.setPayload(listings);
         return result;
     }
 }

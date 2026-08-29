@@ -13,7 +13,7 @@ public interface ListingRepository {
 
     List<Listing> findByUserId(int userId);
 
-    Listing createListing(Listing listing);
+    Listing create(Listing listing);
 
     boolean update(Listing listing);
 

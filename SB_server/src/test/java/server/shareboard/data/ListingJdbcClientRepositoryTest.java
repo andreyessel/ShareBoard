@@ -81,7 +81,7 @@ class ListingJdbcClientRepositoryTest {
     @Test
     void shouldCreateANewUser() {
         //Act
-        Listing actual = repository.createListing(TestDataHelper.listingToCreate());
+        Listing actual = repository.create(TestDataHelper.listingToCreate());
 
         //Assert
         assertNotNull(actual);
@@ -96,6 +96,7 @@ class ListingJdbcClientRepositoryTest {
         // Act & Assert — happy path
         listing.setListingId(1);
         assertTrue(repository.update(listing));
+        assertEquals(1, listing.getListingId());
 
         // Act & Assert — unhappy path
         listing.setListingId(999);

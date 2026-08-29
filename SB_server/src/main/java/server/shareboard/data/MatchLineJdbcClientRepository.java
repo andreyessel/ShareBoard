@@ -4,6 +4,8 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import server.shareboard.data.mappers.MatchLineMapper;
+import server.shareboard.models.Listing;
 import server.shareboard.models.MatchLine;
 
 import java.util.List;
@@ -18,12 +20,19 @@ public class MatchLineJdbcClientRepository implements MatchLineRepository{
 
     @Override
     public List<MatchLine> findAll() {
-        return List.of();
+        return jdbcClient.sql("select * from match_line limit 100").query(new MatchLineMapper()).list();
     }
 
     @Override
     public List<MatchLine> findByListingId(int listingId) {
-        return List.of();
+        return jdbcClient.sql("""
+                select * from match_line
+                where need_listing_id = ? or surplus_listing_id = ?
+                """)
+                .param(listingId)
+                .param(listingId)
+                .query(new MatchLineMapper())
+                .list();
     }
 
     @Override

@@ -5,6 +5,7 @@ import server.shareboard.data.ListingRepository;
 import server.shareboard.data.MatchLineRepository;
 import server.shareboard.models.Listing;
 import server.shareboard.models.MatchLine;
+import server.shareboard.models.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -93,6 +94,58 @@ public class ListingService {
         Result<List<Listing>> result = new Result<>();
       List<Listing> found = repository.findByUserId(userId);
         result.setPayload(found);
+        return result;
+    }
+
+    // ListingService.java — add this method (needs `import server.shareboard.models.Status;`)
+
+    public Result<Listing> update(Listing listing, int requesterId) {
+        Result<Listing> result = new Result<>();
+
+        if (listing == null) {
+            result.addErrorMessage("Listing cannot be null", ResultType.INVALID);
+            return result;
+        }
+
+        Listing existing = repository.findById(listing.getListingId());
+        if (existing == null) {
+            result.addErrorMessage("Listing not found", ResultType.NOT_FOUND);
+            return result;
+        }
+
+        if (existing.getUserId() != requesterId) {
+            result.addErrorMessage("You can only edit your own listings", ResultType.INVALID);
+            return result;
+        }
+
+        if (existing.getStatus() != Status.OPEN) {
+            result.addErrorMessage("Only OPEN listings can be edited", ResultType.INVALID);
+            return result;
+        }
+
+        if (listing.getCategoryId() <= 0) {
+            result.addErrorMessage("categoryId is required", ResultType.INVALID);
+            return result;
+        }
+        if (listing.getQuantity() <= 0) {
+            result.addErrorMessage("quantity must be greater than 0", ResultType.INVALID);
+            return result;
+        }
+
+        existing.setCategoryId(listing.getCategoryId());
+        existing.setQuantity(listing.getQuantity());
+        existing.setQuantityRemaining(listing.getQuantity());
+        existing.setUrgency(listing.getUrgency());
+        existing.setNeededBy(listing.getNeededBy());
+        existing.setAvailableUntil(listing.getAvailableUntil());
+
+        boolean updated = repository.update(existing);
+        if (!updated) {
+            result.addErrorMessage("Could not update listing", ResultType.INVALID);
+            return result;
+        }
+
+        result.setPayload(existing);
         return result;
     }
 }

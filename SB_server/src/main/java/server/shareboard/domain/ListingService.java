@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import server.shareboard.data.ListingRepository;
 import server.shareboard.data.MatchLineRepository;
 import server.shareboard.models.Listing;
+import server.shareboard.models.ListingType;
 import server.shareboard.models.MatchLine;
 import server.shareboard.models.Status;
 
@@ -132,6 +133,17 @@ public class ListingService {
             return result;
         }
 
+        if (existing.getType() == ListingType.SURPLUS) {
+            if (existing.getUrgency() != null || existing.getNeededBy() != null){
+                result.addErrorMessage("You cannot edit `SURPLUS` with a different type", ResultType.INVALID);
+                return result;
+            }
+        }
+        if (existing.getType() == ListingType.NEED) {
+            if(existing.getAvailableUntil() != null) {
+                result.addErrorMessage("You cannot edit `NEED` with a different tpye",ResultType.INVALID );
+            }
+        }
         existing.setCategoryId(listing.getCategoryId());
         existing.setQuantity(listing.getQuantity());
         existing.setQuantityRemaining(listing.getQuantity());

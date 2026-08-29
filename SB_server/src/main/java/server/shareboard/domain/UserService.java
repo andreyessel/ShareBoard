@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import server.shareboard.data.UserRepository;
 import server.shareboard.models.User;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
 
@@ -57,6 +59,7 @@ public class UserService {
             result.addErrorMessage("Password cannot be null", ResultType.INVALID);
             return result;
         }
+        user.setCreatedAt(LocalDateTime.now());
         User created = repository.create(user);
         if (created == null)  {
             result.addErrorMessage("Could not create user", ResultType.INVALID);

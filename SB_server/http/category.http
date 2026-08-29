@@ -1,4 +1,4 @@
-@base_url = http://localhost:8080/api/listings
+@base_url = http://localhost:8080/api/categories
 
 ### happy path: category found by id
 GET {{base_url}}/1 HTTP/1.1

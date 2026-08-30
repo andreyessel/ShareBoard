@@ -11,7 +11,7 @@ GET {{base_url}}/-1 HTTP/1.1
 
 
 ### find by username
-GET {{base_url}}/user/riverside_shelter HTTP/1.1
+GET {{base_url}}/username/riverside_shelter HTTP/1.1
 
 ### unhappy path 
-GET {{base_url}}/user/doesNotExist HTTP/1.1
+GET {{base_url}}/username/doesNotExist HTTP/1.1

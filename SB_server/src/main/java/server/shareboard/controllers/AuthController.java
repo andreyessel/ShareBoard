@@ -22,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> create(@RequestBody User user) throws NoSuchAlgorithmException {
+    public ResponseEntity<?> register(@RequestBody User user) throws NoSuchAlgorithmException {
         Result<User> result = service.create(user);
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);

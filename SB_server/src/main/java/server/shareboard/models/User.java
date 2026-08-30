@@ -49,7 +49,7 @@ public class User {
     }
 
     public void setOrganization(boolean organization) {
-        isOrganization = organization;
+      isOrganization = organization;
     }
 
     public LocalDateTime getCreatedAt() {

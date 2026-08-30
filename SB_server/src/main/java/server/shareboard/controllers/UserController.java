@@ -8,6 +8,9 @@ import server.shareboard.domain.UserService;
 import server.shareboard.models.Listing;
 import server.shareboard.models.User;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -24,15 +27,23 @@ public class UserController {
         if(!result.isSuccess()) {
            return ErrorResponse.build(result);
         }
-        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+        User user = result.getPayload();
+        return new ResponseEntity<>(
+                Map.of("userId", user.getUserId(), "username", user.getUsername()),
+                HttpStatus.OK
+        );
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody User user) {
-        Result<User> result = service.create(user);
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> findByUsername(@PathVariable("username") String username){
+        Result<User> result = service.findByUsername(username);
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);
         }
-        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+        User user = result.getPayload();
+        return new ResponseEntity<>(
+                Map.of("userId", user.getUserId(), "username", user.getUsername()),
+                HttpStatus.OK
+        );
     }
 }

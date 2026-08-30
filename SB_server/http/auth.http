@@ -1,0 +1,63 @@
+@base_url = http://localhost:8080/api/auth
+
+### happy path for registry a new user
+POST {{base_url}}/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "newUser01",
+  "passwordHash": "thisNewPassword",
+  "organization": true
+}
+
+
+
+### unhappy path: username and password cannot be empty
+POST {{base_url}}/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "",
+  "passwordHash": "",
+  "organization": true
+}
+
+### happy path for logining an existing user
+POST {{base_url}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "newUser01",
+  "password": "thisNewPassword"
+}
+
+
+### unhappy path: username does not exits
+POST {{base_url}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "doesNotExist",
+  "password": "thisNewPassword"
+}
+
+
+### unhappy path: username or password cannot be empty
+POST {{base_url}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "",
+  "password": ""
+}
+
+
+### unhappy path:  password does not match
+POST {{base_url}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "newUser01",
+  "password": "NotMyPassword"
+}
+

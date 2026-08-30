@@ -15,5 +15,4 @@ public class ErrorResponse {
         return new ResponseEntity<>(result.getErrorMessages(), status);
     }
 
-    //this is day4
 }

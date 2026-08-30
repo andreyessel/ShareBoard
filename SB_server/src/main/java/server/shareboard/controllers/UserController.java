@@ -8,6 +8,8 @@ import server.shareboard.domain.UserService;
 import server.shareboard.models.Listing;
 import server.shareboard.models.User;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -28,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody User user) {
+    public ResponseEntity<?> create(@RequestBody User user) throws NoSuchAlgorithmException {
         Result<User> result = service.create(user);
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);

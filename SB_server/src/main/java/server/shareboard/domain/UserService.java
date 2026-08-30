@@ -50,7 +50,7 @@ public class UserService {
         return result;
     }
 
-    public Result<User> create(User user)  {
+    public Result<User> create(User user) throws NoSuchAlgorithmException {
         Result<User> result = new Result<>();
 
         //validate
@@ -88,7 +88,7 @@ public class UserService {
     }
 
     //An existing user logins in
-    public Result<User> login(String username, String password) {
+    public Result<User> login(String username, String password) throws NoSuchAlgorithmException {
         Result<User> result = new Result<>();
 
         User found = repository.findByUsername(username);;

@@ -50,7 +50,7 @@ public class UserService {
         return result;
     }
 
-    public Result<User> create(User user) {
+    public Result<User> create(User user) throws NoSuchAlgorithmException {
         Result<User> result = new Result<>();
 
         //validate
@@ -61,16 +61,33 @@ public class UserService {
         if (user.getUsername() == null || user.getUsername().isBlank())  {
             result.addErrorMessage("Username cannot be null", ResultType.INVALID);
         }
+        if (user.getPasswordHash() == null || user.getPasswordHash().length() < 8){
+            result.addErrorMessage("Password must be at least 8 characters", ResultType.INVALID);
+        }
+        if (!result.isSuccess()){
+            return result;
+        }
+
+        if (repository.findByUsername(user.getUsername()) != null) {
+            result.addErrorMessage("Username is already taken", ResultType.INVALID);
+            return result;
+        }
+
+        // hashing password
+        user.setPasswordHash(hash(user.getPasswordHash()));
         user.setCreatedAt(LocalDateTime.now());
+
         User created = repository.create(user);
         if (created == null)  {
             result.addErrorMessage("Could not create user", ResultType.INVALID);
             return result;
         }
+
         result.setPayload(created);
         return result;
     }
 
+    //Password hashing logic
     private String hash(String rawPassword) throws NoSuchAlgorithmException {
       MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
 

@@ -10,15 +10,6 @@ Content-Type: application/json
   "organization": true
 }
 
-### unhappy path: user already exist
-POST {{base_url}}/register HTTP/1.1
-Content-Type: application/json
-
-{
-  "username": "newUser01",
-  "passwordHash": "thisNewPassword",
-  "organization": true
-}
 
 
 ### unhappy path: username and password cannot be empty
@@ -37,7 +28,7 @@ Content-Type: application/json
 
 {
   "username": "newUser01",
-  "passwordHash": "thisNewPassword"
+  "password": "thisNewPassword"
 }
 
 
@@ -47,7 +38,7 @@ Content-Type: application/json
 
 {
   "username": "doesNotExist",
-  "passwordHash": "thisNewPassword"
+  "password": "thisNewPassword"
 }
 
 
@@ -57,7 +48,7 @@ Content-Type: application/json
 
 {
   "username": "",
-  "passwordHash": ""
+  "password": ""
 }
 
 
@@ -67,6 +58,6 @@ Content-Type: application/json
 
 {
   "username": "newUser01",
-  "passwordHash": "NotMyPassword"
+  "password": "NotMyPassword"
 }
 

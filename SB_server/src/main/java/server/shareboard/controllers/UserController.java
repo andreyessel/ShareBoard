@@ -29,7 +29,7 @@ public class UserController {
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/user/{username}")
     public ResponseEntity<?> findByUsername(@PathVariable("username") String username){
         Result<User> result = service.findByUsername(username);
         if(!result.isSuccess()) {

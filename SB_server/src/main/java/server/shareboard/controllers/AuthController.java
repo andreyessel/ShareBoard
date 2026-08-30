@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import server.shareboard.domain.Result;
 import server.shareboard.domain.UserService;
 import server.shareboard.models.User;
+
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @RestController
@@ -21,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user)  {
+    public ResponseEntity<?> register(@RequestBody User user) throws NoSuchAlgorithmException {
         Result<User> result = service.create(user);
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);
@@ -32,7 +34,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Credentials credentials) {
+    public ResponseEntity<?> login(@RequestBody Credentials credentials) throws NoSuchAlgorithmException {
         Result<User> result = service.login(credentials.username(), credentials.password());
         if (!result.isSuccess()) {
             return ErrorResponse.build(result);

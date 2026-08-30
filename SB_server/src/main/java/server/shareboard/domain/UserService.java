@@ -91,6 +91,11 @@ public class UserService {
     public Result<User> login(String username, String password) throws NoSuchAlgorithmException {
         Result<User> result = new Result<>();
 
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            result.addErrorMessage("Invalid username or password", ResultType.INVALID);
+            return result;
+        }
+
         User found = repository.findByUsername(username);
         if (found == null) {
             result.addErrorMessage("Invalid username or password",ResultType.INVALID);

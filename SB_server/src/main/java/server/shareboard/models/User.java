@@ -48,8 +48,8 @@ public class User {
         return isOrganization;
     }
 
-    public void setOrganization(boolean isOrganization) {
-      this.isOrganization = isOrganization;
+    public void setOrganization(boolean organization) {
+      isOrganization = organization;
     }
 
     public LocalDateTime getCreatedAt() {

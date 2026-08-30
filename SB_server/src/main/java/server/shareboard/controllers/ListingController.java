@@ -46,4 +46,36 @@ public class ListingController {
         Result<List<Listing>> result = service.findAll();
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
+
+    @GetMapping("/myListings")
+    public ResponseEntity<?> findByUserId(@RequestParam("userId") int userId) {
+        Result<List<Listing>> result = service.findByUserId(userId);
+        if (!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/{listingId}")
+    public ResponseEntity<?> update(@PathVariable("listingId") int listingId,
+                                    @RequestParam("requesterId") int requesterId,
+                                    @RequestBody Listing listing) {
+        listing.setListingId(listingId);
+        Result<Listing> result = service.update(listing, requesterId);
+        if (!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{listingId}")
+    public ResponseEntity<?> deleteById(@PathVariable("listingId") int listingId,
+                                        @RequestParam("requesterId") int requesterId) {
+        Result<Listing> result = service.deleteById(listingId, requesterId);
+        if(!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -134,23 +134,34 @@ public class ListingService {
             return result;
         }
 
+        if (listing.getType() != existing.getType()) {
+            result.addErrorMessage("Cannot change a listing's type", ResultType.INVALID);
+            return result;
+        }
+
         if (existing.getType() == ListingType.SURPLUS) {
-            if (existing.getUrgency() != null || existing.getNeededBy() != null){
-                result.addErrorMessage("You cannot edit `SURPLUS` with a different type", ResultType.INVALID);
+            if (listing.getUrgency() != null || listing.getNeededBy() != null) {
+                result.addErrorMessage("SURPLUS listings cannot have urgency or neededBy", ResultType.INVALID);
                 return result;
             }
         }
         if (existing.getType() == ListingType.NEED) {
-            if(existing.getAvailableUntil() != null) {
-                result.addErrorMessage("You cannot edit `NEED` with a different tpye",ResultType.INVALID );
+            if (listing.getAvailableUntil() != null) {
+                result.addErrorMessage("NEED listings cannot have availableUntil", ResultType.INVALID);
+                return result;
             }
         }
+
         existing.setCategoryId(listing.getCategoryId());
         existing.setQuantity(listing.getQuantity());
         existing.setQuantityRemaining(listing.getQuantity());
-        existing.setUrgency(listing.getUrgency());
-        existing.setNeededBy(listing.getNeededBy());
-        existing.setAvailableUntil(listing.getAvailableUntil());
+
+        if (existing.getType() == ListingType.NEED) {
+            existing.setUrgency(listing.getUrgency());
+            existing.setNeededBy(listing.getNeededBy());
+        } else {
+            existing.setAvailableUntil(listing.getAvailableUntil());
+        }
 
         boolean updated = repository.update(existing);
         if (!updated) {

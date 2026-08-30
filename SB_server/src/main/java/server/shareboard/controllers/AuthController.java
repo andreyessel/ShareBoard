@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import server.shareboard.domain.Result;
 import server.shareboard.domain.UserService;
 import server.shareboard.models.User;
-
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @RestController

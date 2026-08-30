@@ -4,7 +4,10 @@ import org.springframework.stereotype.Service;
 import server.shareboard.data.UserRepository;
 import server.shareboard.models.User;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 @Service
 public class UserService {
@@ -55,9 +58,8 @@ public class UserService {
             result.addErrorMessage("User cannot be null", ResultType.INVALID);
             return result;
         }
-        if (user.getPasswordHash() == null || user.getPasswordHash().isBlank())  {
-            result.addErrorMessage("Password cannot be null", ResultType.INVALID);
-            return result;
+        if (user.getUsername() == null || user.getUsername().isBlank())  {
+            result.addErrorMessage("Username cannot be null", ResultType.INVALID);
         }
         user.setCreatedAt(LocalDateTime.now());
         User created = repository.create(user);
@@ -67,5 +69,15 @@ public class UserService {
         }
         result.setPayload(created);
         return result;
+    }
+
+    private String hash(String rawPassword) throws NoSuchAlgorithmException {
+      MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+
+      byte[] passwordAsBytes = rawPassword.getBytes();
+      byte[] digestBytes = sha256.digest(passwordAsBytes);
+
+      String printableHash = Base64.getEncoder().encodeToString(digestBytes);
+      return printableHash;
     }
 }

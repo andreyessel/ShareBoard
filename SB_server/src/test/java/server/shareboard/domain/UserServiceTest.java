@@ -8,6 +8,8 @@ import server.shareboard.data.TestDataHelper;
 import server.shareboard.data.UserRepository;
 import server.shareboard.models.User;
 
+import java.security.NoSuchAlgorithmException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -80,7 +82,7 @@ class UserServiceTest {
     }
 
     @Test
-    void shouldCreateANewUser() {
+    void shouldCreateANewUser() throws NoSuchAlgorithmException {
         //Arrange
         User userToCreate = TestDataHelper.userToCreate();
         User createdUser = TestDataHelper.existingUser();
@@ -93,5 +95,20 @@ class UserServiceTest {
         //Assert
         assertTrue(result.isSuccess());
         assertEquals(createdUser, result.getPayload());
+    }
+
+    @Test
+    void shouldSuccessfullyLoginExistingUserWithRightCredentials() throws NoSuchAlgorithmException {
+        //Arrange
+        User found = TestDataHelper.existingUser();
+        when(repository.findByUsername("existingUser")).thenReturn(found);
+
+        //Act
+        Result<User> result = service.login(found.getUsername(), found.getPasswordHash());
+
+        //Assert
+        assertTrue(result.isSuccess());
+        assertEquals(found,result.getPayload());
+
     }
 }

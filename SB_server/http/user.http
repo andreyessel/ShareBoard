@@ -1,6 +1,6 @@
 @base_url = http://localhost:8080/api/user
 
-### happy path
+### find by user id 
 GET {{base_url}}/1 HTTP/1.1
 
 ### unhappy path :user not found 
@@ -9,12 +9,9 @@ GET {{base_url}}/99 HTTP/1.1
 ### unhappy path: User with id < 0
 GET {{base_url}}/-1 HTTP/1.1
 
-### Create a new user
-POST {{base_url}}
-Content-Type: application/json
 
-{
-  "username": "new user",
-  "passwordHash": "thispassword",
-  "isOrganization": "TRUE"
-}
+### find by username
+GET {{base_url}}/username/riverside_shelter HTTP/1.1
+
+### unhappy path 
+GET {{base_url}}/username/doesNotExist HTTP/1.1

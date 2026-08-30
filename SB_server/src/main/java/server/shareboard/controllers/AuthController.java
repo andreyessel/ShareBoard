@@ -32,5 +32,15 @@ public class AuthController {
         return new ResponseEntity<>(Map.of("userId", created.getUserId(),"username", created.getUsername()),HttpStatus.CREATED);
     }
 
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Credentials credentials) {
+        Result<User> result = service.login(credentials.username(), credentials.password());
+        if (!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        User user = result.getPayload();
+        return new ResponseEntity<>(Map.of("userId", user.getUserId(), "username", user.getUsername()),HttpStatus.OK);
+    }
         public record Credentials(String username, String password) {}
 }

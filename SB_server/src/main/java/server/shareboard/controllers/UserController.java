@@ -29,9 +29,9 @@ public class UserController {
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody User user) throws NoSuchAlgorithmException {
-        Result<User> result = service.create(user);
+    @GetMapping("/{username}")
+    public ResponseEntity<?> findByUsername(@PathVariable("username") String username){
+        Result<User> result = service.findByUsername(username);
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);
         }

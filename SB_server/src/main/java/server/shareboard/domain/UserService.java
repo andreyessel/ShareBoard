@@ -59,7 +59,7 @@ public class UserService {
             return result;
         }
         if (user.getUsername() == null || user.getUsername().isBlank())  {
-            result.addErrorMessage("Username cannot be null", ResultType.INVALID);
+            result.addErrorMessage("Username cannot be empty", ResultType.INVALID);
         }
         if (user.getPasswordHash() == null || user.getPasswordHash().length() < 8){
             result.addErrorMessage("Password must be at least 8 characters", ResultType.INVALID);
@@ -91,13 +91,13 @@ public class UserService {
     public Result<User> login(String username, String password) throws NoSuchAlgorithmException {
         Result<User> result = new Result<>();
 
-        User found = repository.findByUsername(username);;
+        User found = repository.findByUsername(username);
         if (found == null) {
             result.addErrorMessage("Invalid username or password",ResultType.INVALID);
             return result;
         }
 
-        if (found.getPasswordHash().equals(hash(password))) {
+        if (!found.getPasswordHash().equals(hash(password))) {
             result.addErrorMessage("Invalid username or password", ResultType.INVALID);
             return result;
         }

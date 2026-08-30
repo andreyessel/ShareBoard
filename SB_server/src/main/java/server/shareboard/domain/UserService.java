@@ -50,7 +50,7 @@ public class UserService {
         return result;
     }
 
-    public Result<User> create(User user) throws NoSuchAlgorithmException {
+    public Result<User> create(User user)  {
         Result<User> result = new Result<>();
 
         //validate
@@ -84,6 +84,24 @@ public class UserService {
         }
 
         result.setPayload(created);
+        return result;
+    }
+
+    //An existing user logins in
+    public Result<User> login(String username, String password) {
+        Result<User> result = new Result<>();
+
+        User found = repository.findByUsername(username);;
+        if (found == null) {
+            result.addErrorMessage("Invalid username or password",ResultType.INVALID);
+            return result;
+        }
+
+        if (found.getPasswordHash().equals(hash(password))) {
+            result.addErrorMessage("Invalid username or password", ResultType.INVALID);
+            return result;
+        }
+        result.setPayload(found);
         return result;
     }
 

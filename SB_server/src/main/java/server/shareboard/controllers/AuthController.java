@@ -11,6 +11,7 @@ import server.shareboard.domain.UserService;
 import server.shareboard.models.User;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,11 +23,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) throws NoSuchAlgorithmException {
+    public ResponseEntity<?> register(@RequestBody User user)  {
         Result<User> result = service.create(user);
         if(!result.isSuccess()) {
             return ErrorResponse.build(result);
         }
-        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+        User created = result.getPayload();
+        return new ResponseEntity<>(Map.of("userId", created.getUserId(),"username", created.getUsername()),HttpStatus.CREATED);
     }
+
+        public record Credentials(String username, String password) {}
 }

@@ -193,4 +193,23 @@ class MatchingEngineTest {
         assertEquals(23, need.getQuantityRemaining()); // 100 - (2+3+6+66) = 23
         assertEquals(Status.PARTIALLY_MATCHED, need.getStatus());
     }
+
+    @Test
+    void shouldNotMatchWhenQuantitiesAndQuantityRemainingAreNotEqual() {
+        //Arrange
+        Listing need = new Listing(1, 2, 2, ListingType.NEED, 3, 20, Urgency.HIGH, LocalDate.of(2026, 8, 30), null, Status.OPEN, LocalDateTime.now());
+        Listing surplus = new Listing(2, 5, 2, ListingType.SURPLUS, 20, 20, null, null, LocalDate.of(2026, 9, 1), Status.OPEN, LocalDateTime.of(2026, 8, 24, 1, 1, 1, 1));
+        MatchingEngine engine = new MatchingEngine();
+
+        //Act
+        engine.submit(need);
+        MatchResult result = engine.submit(surplus);
+
+        //Assert
+        assertEquals(1, result.getMatches().size());
+        assertEquals(0, need.getQuantityRemaining());
+        assertEquals(0, surplus.getQuantityRemaining());
+        assertEquals(Status.MATCHED, need.getStatus());
+        assertEquals(Status.MATCHED, surplus.getStatus());
+    }
 }

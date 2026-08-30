@@ -42,5 +42,6 @@ public class AuthController {
         User user = result.getPayload();
         return new ResponseEntity<>(Map.of("userId", user.getUserId(), "username", user.getUsername()),HttpStatus.OK);
     }
+
         public record Credentials(String username, String password) {}
 }

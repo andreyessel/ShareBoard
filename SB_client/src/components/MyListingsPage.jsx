@@ -2,8 +2,8 @@
  function MyListingsPage() {
   return (
     <div>
-      
+      MyListingsPage
     </div>
   )
 }
-export default MyListingsPage
+export default MyListingsPage;

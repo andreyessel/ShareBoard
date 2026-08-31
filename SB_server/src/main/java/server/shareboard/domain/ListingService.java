@@ -72,6 +72,7 @@ public class ListingService {
            repository.update(updated);
        }
 
+       //broadcasting the different is the list isn't empty
        if (!matchResult.getUpdatedListings().isEmpty()) {
            int categoryId = listing.getCategoryId();
            messagingTemplate.convertAndSend("/topic/listings/" + categoryId,
@@ -210,6 +211,10 @@ public class ListingService {
             result.addErrorMessage("Could not delete listing", ResultType.INVALID);
             return result;
         }
+
+        //broadcast after deleted
+        existing.setStatus(Status.WITHDRAWN);
+        messagingTemplate.convertAndSend("/topic/listings/" + existing.getCategoryId(), List.of(existing));
 
         result.setPayload(existing);
         return result;

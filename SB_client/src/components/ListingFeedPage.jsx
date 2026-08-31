@@ -1,9 +1,7 @@
-
 function ListingFeedPage() {
   return (
-    <div>
-      
-    </div>
+    <div>ListingFeedPage</div>
   )
 }
+
 export default ListingFeedPage

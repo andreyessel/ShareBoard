@@ -21,7 +21,7 @@ function ListingFeedPage() {
       <h1>Listings</h1>
       <ul>
         {listings.map(listing => (
-          <li key={listing.listingId}>{listing.type} — quantity {listing.quantity}</li>
+          <li key={listing.listingId}>{listing.type} ~ quantity {listing.quantity} : remaining {listing.quantityRemaining}   {listing.status}</li>
         ))}
       </ul>
     </>

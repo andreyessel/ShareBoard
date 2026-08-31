@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import ListingCard from "./ListingCard";
 
 function ListingFeedPage() {
   const [listings, setListings] = useState([])
@@ -21,7 +22,7 @@ function ListingFeedPage() {
       <h1>Listings</h1>
       <ul>
         {listings.map(listing => (
-          <li key={listing.listingId}>{listing.type} ~ quantity {listing.quantity} : remaining {listing.quantityRemaining}   {listing.status}</li>
+          <ListingCard key={listing.listingId} listing={listing} />
         ))}
       </ul>
     </>

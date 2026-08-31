@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import ListingCard from "./ListingCard";
+import ListingCard from "../components/feed/ListingCard";
 
 function ListingFeedPage() {
   const [listings, setListings] = useState([])

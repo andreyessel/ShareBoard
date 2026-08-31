@@ -68,3 +68,6 @@ Content-Type: application/json
 
 ### delete
 DELETE {{base_url}}/22?requesterId=2
+
+### findAll 
+GET {{base_url}}

@@ -178,6 +178,9 @@ public class ListingService {
             return result;
         }
 
+        //broadcasting the difference
+        messagingTemplate.convertAndSend("/topic/listings/" + existing.getCategoryId(), List.of(existing));
+
         result.setPayload(existing);
         return result;
     }

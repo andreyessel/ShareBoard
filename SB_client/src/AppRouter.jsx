@@ -4,6 +4,7 @@ import ListingFeedPage from "./components/ListingFeedPage"
 import ListingDetailPage from "./components/ListingDetailPage"
 import NewListingPage from "./components/NewListingPage"
 import MyListingsPage from "./components/MyListingsPage"
+import NotFound from "./components/NotFound"
 
 
 function AppRouter() {
@@ -16,6 +17,7 @@ function AppRouter() {
         { path: "listings/:listingId", element: <ListingDetailPage /> },
         { path: "new-listing", element: <NewListingPage /> },
         { path: "my-listings", element: <MyListingsPage /> },
+        { path: "*", element: <NotFound />},
       ],
     },
   ]

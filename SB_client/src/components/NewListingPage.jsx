@@ -2,7 +2,7 @@
 function NewListingPage() {
   return (
     <div>
-      
+      NewListingPage
     </div>
   )
 }

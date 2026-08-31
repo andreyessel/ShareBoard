@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Layout from "./components/Layout"
-import ListingFeedPage from "./components/ListingFeedPage"
-import ListingDetailPage from "./components/ListingDetailPage"
-import NewListingPage from "./components/NewListingPage"
-import MyListingsPage from "./components/MyListingsPage"
-import NotFound from "./components/NotFound"
+import ListingFeedPage from "./pages/ListingFeedPage"
+import ListingDetailPage from "./pages/ListingDetailPage"
+import NewListingPage from "./pages/NewListingPage"
+import MyListingsPage from "./pages/MyListingsPage"
+import NotFound from "./pages/NotFound"
 
 
 function AppRouter() {

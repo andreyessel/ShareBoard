@@ -1,5 +1,6 @@
 package server.shareboard.domain;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import server.shareboard.data.ListingRepository;
 import server.shareboard.data.MatchLineRepository;
@@ -17,11 +18,13 @@ public class ListingService {
     private final ListingRepository repository;
     private final MatchingEngine matchingEngine;
     private final MatchLineRepository matchLineRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ListingService(ListingRepository repository, MatchingEngine matchingEngine, MatchLineRepository matchLineRepository) {
+    public ListingService(ListingRepository repository, MatchingEngine matchingEngine, MatchLineRepository matchLineRepository, SimpMessagingTemplate messagingTemplate) {
         this.repository = repository;
         this.matchingEngine = matchingEngine;
         this.matchLineRepository = matchLineRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
    public Result<Listing> create(Listing listing) {
@@ -67,6 +70,12 @@ public class ListingService {
      }
        for (Listing updated : matchResult.getUpdatedListings()) {
            repository.update(updated);
+       }
+
+       if (!matchResult.getUpdatedListings().isEmpty()) {
+           int categoryId = listing.getCategoryId();
+           messagingTemplate.convertAndSend("/topic/listings/" + categoryId,
+                   matchResult.getUpdatedListings());
        }
 
         result.setPayload(created);

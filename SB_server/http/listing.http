@@ -45,7 +45,7 @@ Content-Type: application/json
 }
 
 ### happy path: find by id
-GET {{base_url}}/22 HTTP/1.1
+GET {{base_url}}/8 HTTP/1.1
 
 
 ### happy path: find by userId
@@ -53,7 +53,7 @@ GET {{base_url}}/myListings?userId=1
 
 
 ### happy path: update a listing
-PUT {{base_url}}/8?requesterId=2 HTTP/1.1
+PUT {{base_url}}/12?requesterId=2 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -68,3 +68,6 @@ Content-Type: application/json
 
 ### delete
 DELETE {{base_url}}/22?requesterId=2
+
+### findAll 
+GET {{base_url}}

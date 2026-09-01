@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 function ListingDetailPage() {
-  const { listingId } = useParams();
-  const [listing, setListing] = useState(null);
+  const { listingId } = useParams()
+  const [listing, setListing] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -13,17 +14,22 @@ function ListingDetailPage() {
       } else {
         setListing(null)
       }
+      setLoading(false)
     }
     fetchListing()
   }, [listingId])
 
-  if (!listing) {
+  if (loading) {
     return <p>Loading...</p>
+  }
+
+  if (!listing) {
+    return <p>Listing not found.</p>
   }
 
   return (
     <div>
-      <h2>{listing.type}</h2>
+      <h1>{listing.type}</h1>
       <p>Quantity: {listing.quantity}</p>
       <p>Status: {listing.status}</p>
     </div>

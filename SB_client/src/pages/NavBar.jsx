@@ -1,13 +1,10 @@
-// src/pages/NavBar.jsx
 import { NavLink } from "react-router-dom";
 
 function NavBar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container">
-        <NavLink className="navbar-brand fw-bold" to="/">
-          ShareBoard
-        </NavLink>
+        <NavLink className="navbar-brand fw-bold" to="/"> ShareBoard</NavLink>
 
         <button
           className="navbar-toggler"
@@ -24,25 +21,12 @@ function NavBar() {
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <NavLink
-                className={({ isActive }) =>
-                  "nav-link" + (isActive ? " active fw-semibold" : "")
-                }
-                to="/"
-                end
-              >
-                Feed
-              </NavLink>
+              <NavLink className={({ isActive }) =>
+                  "nav-link" + (isActive ? " active fw-semibold" : "") } to="/" > Feed </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink
-                className={({ isActive }) =>
-                  "nav-link" + (isActive ? " active fw-semibold" : "")
-                }
-                to="/my-listings"
-              >
-                My Listings
-              </NavLink>
+              <NavLink className={({ isActive }) =>"nav-link" + (isActive ? " active fw-semibold" : "") }
+                to="/my-listings" > My Listings </NavLink>
             </li>
           </ul>
 

@@ -21,9 +21,7 @@ function ListingDetailPage() {
   useEffect(() => {
     const fetchListing = async () => {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:8080/api/listings/${listingId}`
-      );
+      const response = await fetch(`http://localhost:8080/api/listings/${listingId}` );
       if (response.ok) {
         setListing(await response.json());
       } else {
@@ -33,13 +31,19 @@ function ListingDetailPage() {
     };
     fetchListing();
   }, [listingId]);
-
+  
+  //for deleting
   async function handleWithdraw() {
-    if (!window.confirm("Withdraw this listing?")) return;
+  const response = await fetch(`http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
+      { method: "DELETE" } );
 
-    const response = await fetch(
-      `http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
-      { method: "DELETE" }
+    if (response.ok) {  navigate("/"); } }
+
+    //for updating
+  async function handleEdit() {
+
+    const response = await fetch(`http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
+
     );
 
     if (response.ok) {
@@ -106,12 +110,9 @@ function ListingDetailPage() {
 
           {canEdit && (
             <div className="d-flex gap-2">
-              <button
-                className="btn btn-outline-danger"
-                onClick={handleWithdraw}
-              >
-                Withdraw
-              </button>
+              <button onClick={handleEdit}>Edit</button>
+              <button className="btn btn-outline-danger"onClick={handleWithdraw}>  Withdraw</button>
+           
             </div>
           )}
         </div>

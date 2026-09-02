@@ -28,16 +28,13 @@ export default function ListingCard({ listing }) {
                   ? "text-bg-danger-subtle text-danger-emphasis"
                   : "text-bg-success-subtle text-success-emphasis"
               }`} > {isNeed ? "Need" : "Surplus"}
-            </span>
-            {isNeed && <UrgencyBadge urgency={listing.urgency} />}
+            </span> {isNeed && <UrgencyBadge urgency={listing.urgency} />}
           </div>
 
           <h2 className="h5 mb-1">
             {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
           </h2>
-          <p className="text-muted small mb-3">
-            {listing.quantityRemaining} remaining
-          </p>
+          <p className="text-muted small mb-3">  {listing.quantityRemaining} remaining</p>
 
           <div className="mt-auto d-flex justify-content-between align-items-center">
             <span className="small text-muted">

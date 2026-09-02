@@ -1,39 +1,123 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import StatusBadge from "../components/feed/StatusBadge";
+import UrgencyBadge from "../components/feed/UrgencyBadge";
+
+function formatDate(dateString) {
+  if (!dateString) return null;
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 function ListingDetailPage() {
-  const { listingId } = useParams()
-  const [listing, setListing] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { listingId } = useParams();
+  const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchListing = async () => {
-      const response = await fetch(`http://localhost:8080/api/listings/${listingId}`)
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:8080/api/listings/${listingId}`
+      );
       if (response.ok) {
-        setListing(await response.json())
+        setListing(await response.json());
       } else {
-        setListing(null)
+        setListing(null);
       }
-      setLoading(false)
+      setLoading(false);
+    };
+    fetchListing();
+  }, [listingId]);
+
+  async function handleWithdraw() {
+    if (!window.confirm("Withdraw this listing?")) return;
+
+    const response = await fetch(
+      `http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
+      { method: "DELETE" }
+    );
+
+    if (response.ok) {
+      navigate("/");
     }
-    fetchListing()
-  }, [listingId])
+  }
 
   if (loading) {
-    return <p>Loading...</p>
+    return <p className="text-muted py-4">Loading…</p>;
   }
 
   if (!listing) {
-    return <p>Listing not found.</p>
+    return (
+      <div className="py-4">
+        <p className="text-muted">Listing not found.</p>
+        <Link to="/">Back to feed</Link>
+      </div>
+    );
   }
 
+  const isNeed = listing.type === "NEED";
+  const deadline = isNeed ? listing.neededBy : listing.availableUntil;
+  const deadlineLabel = isNeed ? "Needed by" : "Available until";
+  const canEdit = listing.status === "OPEN";
+
   return (
-    <div>
-      <h1>{listing.type}</h1>
-      <p>Quantity: {listing.quantity}</p>
-      <p>Status: {listing.status}</p>
+    <div className="py-4" style={{ maxWidth: "560px", margin: "0 auto" }}>
+      <Link to="/" className="d-inline-block mb-3 text-decoration-none">
+        &larr; Back </Link>
+
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-start mb-2">
+            <span
+              className={`badge ${ isNeed
+                  ? "text-bg-danger-subtle text-danger-emphasis"
+                  : "text-bg-success-subtle text-success-emphasis"
+              }`}
+            >  {isNeed ? "Need" : "Surplus"} </span>
+            {isNeed && <UrgencyBadge urgency={listing.urgency} />}
+          </div>
+
+          <h1 className="h4 mb-3">
+            {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
+          </h1>
+
+          <dl className="row mb-3">
+            <dt className="col-5 col-sm-4 text-muted fw-normal">Quantity</dt>
+            <dd className="col-7 col-sm-8">{listing.quantity}</dd>
+
+            <dt className="col-5 col-sm-4 text-muted fw-normal">Remaining</dt>
+            <dd className="col-7 col-sm-8">{listing.quantityRemaining}</dd>
+
+            <dt className="col-5 col-sm-4 text-muted fw-normal">
+              {deadlineLabel}
+            </dt>
+            <dd className="col-7 col-sm-8">{formatDate(deadline) ?? "—"}</dd>
+
+            <dt className="col-5 col-sm-4 text-muted fw-normal">Status</dt>
+            <dd className="col-7 col-sm-8">
+              <StatusBadge status={listing.status} />
+            </dd>
+          </dl>
+
+          {canEdit && (
+            <div className="d-flex gap-2">
+              <button
+                className="btn btn-outline-danger"
+                onClick={handleWithdraw}
+              >
+                Withdraw
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default ListingDetailPage
+export default ListingDetailPage;

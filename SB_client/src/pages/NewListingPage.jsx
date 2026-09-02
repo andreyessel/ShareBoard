@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Fragment } from "react";
 
 const INITIAL_LISTING = {
   userId: 1,
@@ -151,7 +152,7 @@ function NewListingPage() {
             <label className="form-label d-block">Urgency</label>
             <div className="btn-group w-100" role="group">
               {["LOW", "MEDIUM", "HIGH"].map((level) => (
-                <div key={level}>
+                <Fragment key={level}>
                   <input
                     type="radio"
                     className="btn-check"
@@ -161,13 +162,10 @@ function NewListingPage() {
                     checked={listing.urgency === level}
                     onChange={handleChange}
                   />
-                  <label
-                    className="btn btn-outline-secondary"
-                    htmlFor={`urgency${level}`}
-                  >
+                  <label className="btn btn-outline-secondary" htmlFor={`urgency${level}`}>
                     {level.charAt(0) + level.slice(1).toLowerCase()}
                   </label>
-                </div>
+                </Fragment>
               ))}
             </div>
           </div>

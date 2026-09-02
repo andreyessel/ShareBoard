@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ListingCard from "../components/feed/ListingCard";
 
+
 function ListingFeedPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);

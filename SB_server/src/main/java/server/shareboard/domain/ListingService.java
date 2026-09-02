@@ -9,6 +9,7 @@ import server.shareboard.models.ListingType;
 import server.shareboard.models.MatchLine;
 import server.shareboard.models.Status;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,6 +55,25 @@ public class ListingService {
             result.addErrorMessage("listingId cannot be set for `create` operation", ResultType.INVALID);
             return result;
         }
+
+         // Validating date based on Type
+           if (listing.getType() == ListingType.NEED) {
+               if (listing.getNeededBy() == null) {
+                   result.addErrorMessage("Needed By date is required.", ResultType.INVALID);
+               } else if (listing.getNeededBy().isBefore(LocalDate.now())) {
+                   result.addErrorMessage("Needed By date cannot be in the past.", ResultType.INVALID);
+               }
+               listing.setAvailableUntil(null);
+           } else if (listing.getType() == ListingType.SURPLUS) {
+               if (listing.getAvailableUntil() == null) {
+                   result.addErrorMessage("Available Until date is required.", ResultType.INVALID);
+               } else if (listing.getAvailableUntil().isBefore(LocalDate.now())) {
+                   result.addErrorMessage("Available Until date cannot be in the past.", ResultType.INVALID);
+               }
+               listing.setNeededBy(null);
+           }
+
+
 
        listing.setQuantityRemaining(listing.getQuantity());
        listing.setCreatedAt(LocalDateTime.now());

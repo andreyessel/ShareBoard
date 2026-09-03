@@ -7,20 +7,37 @@ function EditListingPage() {
   const navigate = useNavigate();
   const [listing, setListing] = useState(null);
   const [categories, setCategories] = useState([]);
+   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+       setLoading(true);
       const [listingRes, categoriesRes] = await Promise.all([
         fetch(`http://localhost:8080/api/listings/${listingId}`),
         fetch("http://localhost:8080/api/categories"),
       ]);
-      if (listingRes.ok) setListing(await listingRes.json());
+            if (listingRes.ok) {
+        setListing(await listingRes.json());
+      } else {
+        setListing(null); 
+      }
       if (categoriesRes.ok) setCategories(await categoriesRes.json());
+      setLoading(false); 
     };
     fetchData();
   }, [listingId]);
+
+    if (loading) return <p className="text-muted py-4">Loading…</p>; 
+  if (!listing) {
+    return (
+      <div className="py-4">
+        <p className="text-muted">Listing not found.</p>
+        <Link to="/">Back to feed</Link>
+      </div>
+    );
+  }
 
   function handleChange(event) {
     setListing({ ...listing, [event.target.name]: event.target.value });

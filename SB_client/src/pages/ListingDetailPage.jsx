@@ -114,8 +114,8 @@ async function handleWithdraw() {
 
           {canEdit && (
             <div className="d-flex gap-2">
-              <button className="roman-btn" onClick={() => navigate(`/listings/${listingId}/edit`)}>Edit</button>
-              <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>Withdraw</button>
+          <button className="btn btn-outline-primary" onClick={() => navigate(`/listings/${listingId}/edit`)}>Edit</button>        
+        <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>Withdraw</button>
             </div>
           )}
 

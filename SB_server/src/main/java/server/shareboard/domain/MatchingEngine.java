@@ -126,4 +126,11 @@ public class MatchingEngine {
 
     // method for expiration
     //  expire(LocalDateTime expired)
+    public void withdraw(int listingId, ListingType type) {
+        if (type == ListingType.NEED) {
+            needQueue.removeIf(l -> l.getListingId() == listingId);
+        } else {
+            surplusQueue.removeIf(l -> l.getListingId() == listingId);
+        }
+    }
 }

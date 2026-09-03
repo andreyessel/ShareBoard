@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {Link, useNavigate, useParams } from "react-router-dom";
 
 function EditListingPage() {
   const { listingId } = useParams();
@@ -66,7 +66,10 @@ function EditListingPage() {
   if (!listing) return <p className="text-muted py-4">Loading…</p>;
 
   return (
+         
     <div className="py-4" style={{ maxWidth: "480px", margin: "0 auto" }}>
+       <Link to="/" className="d-inline-block mb-3 text-decoration-none">
+        &larr; Back </Link>
       <h1 className="h3 mb-4">Edit Listing</h1>
       <p className="text-muted small">Type: {listing.type} (cannot be changed)</p>
       <form onSubmit={handleSubmit}>

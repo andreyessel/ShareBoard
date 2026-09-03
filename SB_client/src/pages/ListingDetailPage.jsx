@@ -33,12 +33,15 @@ function ListingDetailPage() {
   }, [listingId]);
   
   //for deleting
-  async function handleWithdraw() {
-  const response = await fetch(`http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
-      { method: "DELETE" } );
+ async function handleWithdraw() {
 
-// should it be "/"  or "/my-listings"
-    if (response.ok) {  navigate("/my-listings"); } }
+  const response = await fetch( `http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
+    { method: "DELETE" }
+  );
+  if (response.ok) {
+    navigate("/"); 
+  }
+}
 
   //   //for updating
   // async function handleEdit() {
@@ -111,7 +114,6 @@ function ListingDetailPage() {
 
           {canEdit && (
             <div className="d-flex gap-2">
-              {/* // are you sure we should navigate when editing ?? what is best production practices */}
               <button className="roman-btn" onClick={() => navigate(`/listings/${listingId}/edit`)}>Edit</button>
               <button className="btn btn-outline-danger"onClick={handleWithdraw}>  Withdraw</button>
            

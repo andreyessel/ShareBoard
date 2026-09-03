@@ -93,11 +93,10 @@ public class ListingService {
        }
 
        //broadcasting the different is the list isn't empty
-       if (!matchResult.getUpdatedListings().isEmpty()) {
-           int categoryId = listing.getCategoryId();
-           messagingTemplate.convertAndSend("/topic/listings/" + categoryId,
-                   matchResult.getUpdatedListings());
-       }
+       List<Listing> toBroadcast = matchResult.getUpdatedListings().isEmpty()
+               ? List.of(created)
+               : matchResult.getUpdatedListings();
+       messagingTemplate.convertAndSend("/topic/listings/" + listing.getCategoryId(), toBroadcast);
 
         result.setPayload(created);
         return result;

@@ -16,6 +16,7 @@ function ListingDetailPage() {
   const { listingId } = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,13 +34,12 @@ function ListingDetailPage() {
   }, [listingId]);
   
   //for deleting
- async function handleWithdraw() {
-
+async function handleWithdraw() {
   const response = await fetch( `http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
     { method: "DELETE" }
   );
   if (response.ok) {
-    navigate("/"); 
+    navigate("/");
   }
 }
 
@@ -115,9 +115,31 @@ function ListingDetailPage() {
           {canEdit && (
             <div className="d-flex gap-2">
               <button className="roman-btn" onClick={() => navigate(`/listings/${listingId}/edit`)}>Edit</button>
-              <button className="btn btn-outline-danger"onClick={handleWithdraw}>  Withdraw</button>
-           
+              <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>Withdraw</button>
             </div>
+          )}
+
+          {showConfirm && (
+            <>
+              <div className="modal d-block" tabIndex="-1" role="dialog">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Withdraw listing?</h5>
+                      <button type="button" className="btn-close" onClick={() => setShowConfirm(false)}></button>
+                    </div>
+                    <div className="modal-body">
+                      <p>This will withdraw the listing and it can't be undone. Are you sure?</p>
+                    </div>
+                    <div className="modal-footer">
+                      <button className="btn btn-outline-secondary" onClick={() => setShowConfirm(false)}>Cancel</button>
+                      <button className="btn btn-danger" onClick={handleWithdraw}>Withdraw</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-backdrop show"></div>
+            </>
           )}
         </div>
       </div>

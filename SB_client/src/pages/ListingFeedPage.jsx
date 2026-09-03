@@ -31,6 +31,8 @@ function ListingFeedPage() {
   const matched = listings.filter((l) => l.status === "MATCHED").length;
 
   const partiallyMatch = listings.filter((l) => l.status === "PARTIALLY_MATCHED").length;
+
+  const withdrawn = listings.filter((l) => l.status === "WITHDRAWN").length;
   
 
   return (
@@ -49,6 +51,9 @@ function ListingFeedPage() {
         </span>
            <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
           Partially Matched: <strong>{partiallyMatch}</strong>
+        </span>
+         <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
+          Withdrawn: <strong>{withdrawn}</strong>
         </span>
       </div>
 

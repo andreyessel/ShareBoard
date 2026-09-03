@@ -5,6 +5,7 @@ import ListingDetailPage from "./pages/ListingDetailPage"
 import NewListingPage from "./pages/NewListingPage"
 import MyListingsPage from "./pages/MyListingsPage"
 import NotFound from "./pages/NotFound"
+import EditListingPage from "./pages/EditListingPage"
 
 
 function AppRouter() {
@@ -17,6 +18,7 @@ function AppRouter() {
         { path: "listings/:listingId", element: <ListingDetailPage /> },
         { path: "new-listing", element: <NewListingPage /> },
         { path: "my-listings", element: <MyListingsPage /> },
+        { path: "listings/:listingId/edit", element: <EditListingPage /> },
         { path: "*", element: <NotFound />},
       ],
     },

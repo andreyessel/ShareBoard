@@ -226,14 +226,15 @@ public class ListingService {
             return result;
         }
 
-        boolean deleted = repository.deleteById(listingId);
-        if (!deleted) {
-            result.addErrorMessage("Could not delete listing", ResultType.INVALID);
+        existing.setStatus(Status.WITHDRAWN);
+        boolean updated = repository.update(existing);
+        if (!updated) {
+            result.addErrorMessage("Could not withdraw listing", ResultType.INVALID);
             return result;
         }
 
-        //broadcast after deleted
-        existing.setStatus(Status.WITHDRAWN);
+        matchingEngine.withdraw(listingId, existing.getType());
+
         messagingTemplate.convertAndSend("/topic/listings/" + existing.getCategoryId(), List.of(existing));
 
         result.setPayload(existing);

@@ -97,6 +97,10 @@ async function handleWithdraw() {
             {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
           </h1>
 
+          <p className="text-muted mb-3">
+             {listing.categoryName} · Posted by {listing.ownerUsername}
+          </p>
+
           <dl className="row mb-3">
             <dt className="col-5 col-sm-4 text-muted fw-normal">Quantity</dt>
             <dd className="col-7 col-sm-8">{listing.quantity}</dd>

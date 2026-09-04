@@ -31,6 +31,10 @@ export default function ListingCard({ listing }) {
             </span> {isNeed && <UrgencyBadge urgency={listing.urgency} />}
           </div>
 
+             <p className="text-muted small mb-1">
+                {listing.categoryName} · {listing.ownerUsername}
+             </p>
+             
           <h2 className="h5 mb-1">
             {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
           </h2>

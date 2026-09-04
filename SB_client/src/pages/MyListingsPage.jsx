@@ -10,8 +10,7 @@ function MyListingsPage() {
   useEffect(() => {
     const fetchMyListings = async () => {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:8080/api/listings/myListings?userId=${user.userId}`
+      const response = await fetch( `http://localhost:8080/api/listings/myListings?userId=${user.userId}`
       );
       if (response.ok) {
         setListings(await response.json());

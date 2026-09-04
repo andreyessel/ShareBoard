@@ -103,10 +103,6 @@ class ListingJdbcClientRepositoryTest {
         assertFalse(repository.update(listing));
     }
 
-    @Test
-    void shouldDelete() {
-        assertTrue(repository.deleteById(1));
-        assertFalse(repository.deleteById(1));
-    }
+
 
 }

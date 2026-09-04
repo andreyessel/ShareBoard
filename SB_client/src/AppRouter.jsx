@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound"
 import EditListingPage from "./pages/EditListingPage"
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import RequireAuth from "./components/RequireAuth"
 
 
 
@@ -19,9 +20,9 @@ function AppRouter() {
       children: [
         { index: true, element: <ListingFeedPage /> },
         { path: "listings/:listingId", element: <ListingDetailPage /> },
-        { path: "new-listing", element: <NewListingPage /> },
-        { path: "my-listings", element: <MyListingsPage /> },
-        { path: "listings/:listingId/edit", element: <EditListingPage /> },
+                { path: "new-listing", element: <RequireAuth><NewListingPage /></RequireAuth> },
+        { path: "my-listings", element: <RequireAuth><MyListingsPage /></RequireAuth> },
+        { path: "listings/:listingId/edit", element: <RequireAuth><EditListingPage /></RequireAuth> },
         { path: "login", element: <LoginPage /> },
         { path: "register", element: <RegisterPage /> },
         { path: "*", element: <NotFound />},

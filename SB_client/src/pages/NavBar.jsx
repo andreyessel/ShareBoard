@@ -1,14 +1,18 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import Logo from "../components/Logo";
 
 function NavBar() {
   const { user, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container">
-        <NavLink className="navbar-brand fw-bold" to="/"> ShareBoard</NavLink>
-        <button
+        <NavLink className="navbar-brand fw-bold d-flex align-items-center gap-2" to="/">
+          <Logo size={26} /> ShareBoard
+        </NavLink>        <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
@@ -38,7 +42,7 @@ function NavBar() {
                   + Post Listing
                 </NavLink>
                 <span className="text-light small">Hi, {user.username}</span>
-                <button className="btn btn-outline-light btn-sm" onClick={logout}>
+                <button className="btn btn-outline-light btn-sm" onClick={() => setShowLogoutConfirm(true)}>
                   Log Out
                 </button>
               </>
@@ -51,6 +55,28 @@ function NavBar() {
           </div>
         </div>
       </div>
+            {showLogoutConfirm && (
+        <>
+          <div className="modal d-block" tabIndex="-1" role="dialog">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Log out?</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowLogoutConfirm(false)}></button>
+                </div>
+                <div className="modal-body">
+                  <p>You'll need to log back in to post or manage listings.</p>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-outline-secondary" onClick={() => setShowLogoutConfirm(false)}>Cancel</button>
+                  <button className="btn btn-danger" onClick={logout}>Log Out</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop show"></div>
+        </>
+      )}
     </nav>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import PasswordInput from "../components/PasswordInput";
 
 function LoginPage() {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -47,14 +48,12 @@ function LoginPage() {
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="password">Password</label>
-          <input
-            type="password"
-            className="form-control"
+           <PasswordInput
             id="password"
             name="password"
             value={credentials.password}
             onChange={handleChange}
-            required
+            autoComplete="current-password"
           />
         </div>
         {error && <div className="alert alert-danger py-2">{error}</div>}

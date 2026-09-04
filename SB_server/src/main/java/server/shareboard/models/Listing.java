@@ -139,4 +139,3 @@ public class Listing {
         this.categoryName = categoryName;
     }
 }
-}

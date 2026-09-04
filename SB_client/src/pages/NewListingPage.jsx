@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Fragment } from "react";
+import { useAuth } from "../context/useAuth";
 
 const INITIAL_LISTING = {
-  userId: 1,
   categoryId: "",
   type: "NEED",
   quantity: "",
@@ -13,6 +13,7 @@ const INITIAL_LISTING = {
 };
 
 function NewListingPage() {
+   const { user } = useAuth();
   const [listing, setListing] = useState(INITIAL_LISTING);
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -43,7 +44,7 @@ function NewListingPage() {
     setErrors([]);
 
     const payload = {
-      userId: listing.userId,
+      userId: user.userId,
       categoryId: Number(listing.categoryId),
       type: listing.type,
       quantity: Number(listing.quantity),

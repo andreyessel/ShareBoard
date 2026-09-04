@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import StatusBadge from "../components/feed/StatusBadge";
 import UrgencyBadge from "../components/feed/UrgencyBadge";
+import { useAuth } from "../context/useAuth"; 
 
 function formatDate(dateString) {
   if (!dateString) return null;
@@ -13,6 +14,7 @@ function formatDate(dateString) {
 }
 
 function ListingDetailPage() {
+   const { user } = useAuth(); 
   const { listingId } = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,9 +37,10 @@ function ListingDetailPage() {
   
   //for deleting
 async function handleWithdraw() {
-  const response = await fetch( `http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
-    { method: "DELETE" }
-  );
+    const response = await fetch(
+      `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`, // CHANGED
+      { method: "DELETE" }
+    );
   if (response.ok) {
     navigate("/");
   }

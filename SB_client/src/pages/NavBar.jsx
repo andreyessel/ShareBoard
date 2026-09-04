@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 function NavBar() {
+  const { user, logout } = useAuth();
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container">
         <NavLink className="navbar-brand fw-bold" to="/"> ShareBoard</NavLink>
-
         <button
           className="navbar-toggler"
           type="button"
@@ -17,7 +19,6 @@ function NavBar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
@@ -30,9 +31,24 @@ function NavBar() {
             </li>
           </ul>
 
-          <NavLink to="/new-listing" className="btn btn-warning fw-semibold">
-            + Post Listing
-          </NavLink>
+          <div className="d-flex align-items-center gap-2">
+            {user ? (
+              <>
+                <NavLink to="/new-listing" className="btn btn-warning fw-semibold">
+                  + Post Listing
+                </NavLink>
+                <span className="text-light small">Hi, {user.username}</span>
+                <button className="btn btn-outline-light btn-sm" onClick={logout}>
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className="btn btn-outline-light">Log In</NavLink>
+                <NavLink to="/register" className="btn btn-warning fw-semibold">Sign Up</NavLink>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

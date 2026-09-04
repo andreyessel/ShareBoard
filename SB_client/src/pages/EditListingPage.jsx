@@ -1,8 +1,10 @@
 
 import { useState, useEffect } from "react";
 import {Link, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../context/useAuth"; 
 
 function EditListingPage() {
+   const { user } = useAuth();
   const { listingId } = useParams();
   const navigate = useNavigate();
   const [listing, setListing] = useState(null);
@@ -61,7 +63,7 @@ function EditListingPage() {
     };
 
     const response = await fetch(
-      `http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
+          `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +82,6 @@ function EditListingPage() {
     }
   }
 
-  if (!listing) return <p className="text-muted py-4">Loading…</p>;
 
   return (
          

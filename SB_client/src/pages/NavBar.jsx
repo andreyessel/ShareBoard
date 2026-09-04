@@ -26,8 +26,12 @@ function NavBar() {
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
+                           <NavLink className={({ isActive }) =>
+                  "nav-link" + (isActive ? " active fw-semibold" : "") } to="/feed" > Feed </NavLink>
+            </li>
+            <li className="nav-item">
               <NavLink className={({ isActive }) =>
-                  "nav-link" + (isActive ? " active fw-semibold" : "") } to="/" > Feed </NavLink>
+                "nav-link" + (isActive ? " active fw-semibold" : "") } to="/about"> About </NavLink>
             </li>
             <li className="nav-item">
               <NavLink className={({ isActive }) =>"nav-link" + (isActive ? " active fw-semibold" : "") }

@@ -97,10 +97,5 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .update() > 0;
     }
 
-    @Override
-    public boolean deleteById(int listingId) {
-        return jdbcClient.sql("delete from listing where id = ?;")
-                .param(listingId)
-                .update() > 0;
-    }
+
 }

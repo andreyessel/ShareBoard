@@ -1,45 +1,34 @@
-
 import { useState, useEffect } from "react";
-import {Link, useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/useAuth"; 
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 function EditListingPage() {
-   const { user } = useAuth();
+  const { user } = useAuth();
   const { listingId } = useParams();
   const navigate = useNavigate();
   const [listing, setListing] = useState(null);
   const [categories, setCategories] = useState([]);
-   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-       setLoading(true);
+      setLoading(true);
       const [listingRes, categoriesRes] = await Promise.all([
         fetch(`http://localhost:8080/api/listings/${listingId}`),
         fetch("http://localhost:8080/api/categories"),
       ]);
-            if (listingRes.ok) {
+      if (listingRes.ok) {
         setListing(await listingRes.json());
       } else {
-        setListing(null); 
+        setListing(null);
       }
       if (categoriesRes.ok) setCategories(await categoriesRes.json());
-      setLoading(false); 
+      setLoading(false);
     };
     fetchData();
   }, [listingId]);
-
-    if (loading) return <p className="text-muted py-4">Loading…</p>; 
-  if (!listing) {
-    return (
-      <div className="py-4">
-        <p className="text-muted">Listing not found.</p>
-        <Link to="/">Back to feed</Link>
-      </div>
-    );
-  }
 
   function handleChange(event) {
     setListing({ ...listing, [event.target.name]: event.target.value });
@@ -63,7 +52,7 @@ function EditListingPage() {
     };
 
     const response = await fetch(
-          `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`,
+      `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -82,19 +71,34 @@ function EditListingPage() {
     }
   }
 
+  if (loading) return <p className="text-muted py-4">Loading…</p>;
+  if (!listing) {
+    return (
+      <div className="py-4">
+        <p className="text-muted">Listing not found.</p>
+        <Link to="/">Back to feed</Link>
+      </div>
+    );
+  }
 
   return (
-         
     <div className="py-4" style={{ maxWidth: "480px", margin: "0 auto" }}>
-       <Link to="/" className="d-inline-block mb-3 text-decoration-none">
-        &larr; Back </Link>
+      <Link to="/" className="d-inline-block mb-3 text-decoration-none">
+        &larr; Back
+      </Link>
       <h1 className="h3 mb-4">Edit Listing</h1>
       <p className="text-muted small">Type: {listing.type} (cannot be changed)</p>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label" htmlFor="categoryId">Category</label>
-          <select className="form-select" id="categoryId" name="categoryId"
-                  value={listing.categoryId} onChange={handleChange} required>
+          <select
+            className="form-select"
+            id="categoryId"
+            name="categoryId"
+            value={listing.categoryId}
+            onChange={handleChange}
+            required
+          >
             {categories.map((c) => (
               <option key={c.categoryId} value={c.categoryId}>{c.name}</option>
             ))}
@@ -102,8 +106,16 @@ function EditListingPage() {
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="quantity">Quantity</label>
-          <input type="number" className="form-control" id="quantity" name="quantity"
-                 min="1" value={listing.quantity} onChange={handleChange} required />
+          <input
+            type="number"
+            className="form-control"
+            id="quantity"
+            name="quantity"
+            min="1"
+            value={listing.quantity}
+            onChange={handleChange}
+            required
+          />
         </div>
         {isNeed && (
           <div className="mb-3">
@@ -119,10 +131,15 @@ function EditListingPage() {
           <label className="form-label" htmlFor="deadline">
             {isNeed ? "Needed by" : "Available until"}
           </label>
-          <input type="date" className="form-control" id="deadline"
-                 name={isNeed ? "neededBy" : "availableUntil"}
-                 value={isNeed ? (listing.neededBy ?? "") : (listing.availableUntil ?? "")}
-                 onChange={handleChange} required />
+          <input
+            type="date"
+            className="form-control"
+            id="deadline"
+            name={isNeed ? "neededBy" : "availableUntil"}
+            value={isNeed ? (listing.neededBy ?? "") : (listing.availableUntil ?? "")}
+            onChange={handleChange}
+            required
+          />
         </div>
         {errors.length > 0 && (
           <div className="alert alert-danger">
@@ -136,4 +153,5 @@ function EditListingPage() {
     </div>
   );
 }
+
 export default EditListingPage;

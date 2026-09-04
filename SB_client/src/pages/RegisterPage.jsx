@@ -49,18 +49,7 @@ function RegisterPage() {
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label" htmlFor="passwordHash">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            id="passwordHash"
-            name="passwordHash"
-            value={form.passwordHash}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      
         <div className="mb-3 form-check">
           <PasswordInput
             id="passwordHash"
@@ -69,6 +58,18 @@ function RegisterPage() {
             onChange={handleChange}
             autoComplete="new-password"
           />
+          </div>
+
+          <div className="mb-3 form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="organization"
+              name="organization"
+              checked={form.organization}
+              onChange={handleChange}
+            />
+          
           <label className="form-check-label" htmlFor="organization">
             I'm registering as an organization
           </label>

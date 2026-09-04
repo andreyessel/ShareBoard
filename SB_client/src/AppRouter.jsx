@@ -1,31 +1,32 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Layout from "./components/Layout"
+import HomeGate from "./pages/HomeGate"
 import ListingFeedPage from "./pages/ListingFeedPage"
 import ListingDetailPage from "./pages/ListingDetailPage"
 import NewListingPage from "./pages/NewListingPage"
 import MyListingsPage from "./pages/MyListingsPage"
 import NotFound from "./pages/NotFound"
 import EditListingPage from "./pages/EditListingPage"
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage"
+import RegisterPage from "./pages/RegisterPage"
 import RequireAuth from "./components/RequireAuth"
-
-
+import AboutPage from "./pages/AboutPage"
 
 function AppRouter() {
   const routes = [
+    { path: "/", element: <HomeGate /> },
+    { path: "/about", element: <AboutPage /> },
     {
-      path: "/",
       element: <Layout />,
       children: [
-        { index: true, element: <ListingFeedPage /> },
-        { path: "listings/:listingId", element: <ListingDetailPage /> },
-                { path: "new-listing", element: <RequireAuth><NewListingPage /></RequireAuth> },
-        { path: "my-listings", element: <RequireAuth><MyListingsPage /></RequireAuth> },
-        { path: "listings/:listingId/edit", element: <RequireAuth><EditListingPage /></RequireAuth> },
-        { path: "login", element: <LoginPage /> },
-        { path: "register", element: <RegisterPage /> },
-        { path: "*", element: <NotFound />},
+        { path: "/feed", element: <ListingFeedPage /> },
+        { path: "/listings/:listingId", element: <ListingDetailPage /> },
+        { path: "/new-listing", element: <RequireAuth><NewListingPage /></RequireAuth> },
+        { path: "/my-listings", element: <RequireAuth><MyListingsPage /></RequireAuth> },
+        { path: "/listings/:listingId/edit", element: <RequireAuth><EditListingPage /></RequireAuth> },
+        { path: "/login", element: <LoginPage /> },
+        { path: "/register", element: <RegisterPage /> },
+        { path: "*", element: <NotFound /> },
       ],
     },
   ]

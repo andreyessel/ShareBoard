@@ -7,12 +7,18 @@ function NavBar() {
   const { user, logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+   function handleConfirmLogout() {
+    logout();
+    setShowLogoutConfirm(false);
+  }
+
+   return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sb-navbar">
       <div className="container">
         <NavLink className="navbar-brand fw-bold d-flex align-items-center gap-2" to="/">
           <Logo size={26} /> ShareBoard
-        </NavLink>        <button
+        </NavLink>
+        <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
@@ -26,19 +32,19 @@ function NavBar() {
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-                           <NavLink className={({ isActive }) =>
-                  "nav-link" + (isActive ? " active fw-semibold" : "") } to="/feed" > Feed </NavLink>
+              <NavLink className={({ isActive }) =>
+                "nav-link" + (isActive ? " active fw-semibold" : "")} to="/feed"> Feed </NavLink>
             </li>
             <li className="nav-item">
               <NavLink className={({ isActive }) =>
-                "nav-link" + (isActive ? " active fw-semibold" : "") } to="/about"> About </NavLink>
+                "nav-link" + (isActive ? " active fw-semibold" : "")} to="/about"> About </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className={({ isActive }) =>"nav-link" + (isActive ? " active fw-semibold" : "") }
-                to="/my-listings" > My Listings </NavLink>
+              <NavLink className={({ isActive }) => "nav-link" + (isActive ? " active fw-semibold" : "")}
+                to="/my-listings"> My Listings </NavLink>
             </li>
           </ul>
-
+ 
           <div className="d-flex align-items-center gap-2">
             {user ? (
               <>
@@ -59,7 +65,7 @@ function NavBar() {
           </div>
         </div>
       </div>
-            {showLogoutConfirm && (
+      {showLogoutConfirm && (
         <>
           <div className="modal d-block" tabIndex="-1" role="dialog">
             <div className="modal-dialog">
@@ -73,7 +79,7 @@ function NavBar() {
                 </div>
                 <div className="modal-footer">
                   <button className="btn btn-outline-secondary" onClick={() => setShowLogoutConfirm(false)}>Cancel</button>
-                  <button className="btn btn-danger" onClick={logout}>Log Out</button>
+                  <button className="btn btn-danger" onClick={handleConfirmLogout}>Log Out</button>
                 </div>
               </div>
             </div>
@@ -84,5 +90,5 @@ function NavBar() {
     </nav>
   );
 }
-
+ 
 export default NavBar;

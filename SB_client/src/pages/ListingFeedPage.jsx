@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Client } from "@stomp/stompjs";
 import ListingCard from "../components/feed/ListingCard";
+// import "./LandingPage.css";
 
 function ListingFeedPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState(null); 
   const stompClientRef = useRef(null);
   const subscribedCategories = useRef(new Set());
   const [justMatched, setJustMatched] = useState(new Set());
@@ -88,46 +90,71 @@ function ListingFeedPage() {
   const openNeeds = listings.filter((l) => l.type === "NEED" && l.status === "OPEN").length;
   const openSurplus = listings.filter((l) => l.type === "SURPLUS" && l.status === "OPEN").length;
   const matched = listings.filter((l) => l.status === "MATCHED").length;
-  const partiallyMatch = listings.filter((l) => l.status === "PARTIALLY_MATCHED").length;
+  const partiallyMatched = listings.filter((l) => l.status === "PARTIALLY_MATCHED").length;
   const withdrawn = listings.filter((l) => l.status === "WITHDRAWN").length;
 
-  const visibleListings = listings.filter((l) => l.status !== "WITHDRAWN");
+  const filters = [
+    { key: "need", label: "Open Needs", count: openNeeds, cls: "sb-pill-need", test: (l) => l.type === "NEED" && l.status === "OPEN" },
+    { key: "surplus", label: "Open Surplus", count: openSurplus, cls: "sb-pill-surplus", test: (l) => l.type === "SURPLUS" && l.status === "OPEN" },
+    { key: "matched", label: "Matched", count: matched, cls: "sb-pill-matched", test: (l) => l.status === "MATCHED" },
+    { key: "partial", label: "Partially Matched", count: partiallyMatched, cls: "sb-pill-partial", test: (l) => l.status === "PARTIALLY_MATCHED" },
+    { key: "withdrawn", label: "Withdrawn", count: withdrawn, cls: "sb-pill-withdrawn", test: (l) => l.status === "WITHDRAWN" },
+  ];
 
-  return (
-    <div className="py-4">
-      <h1 className="h3 mb-3">Listings</h1>
-      <div className="d-flex gap-2 mb-4 flex-wrap">
-        <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
-          Open needs: <strong>{openNeeds}</strong>
-        </span>
-        <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
-          Open surplus: <strong>{openSurplus}</strong>
-        </span>
-        <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
-          Matched: <strong>{matched}</strong>
-        </span>
-        <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
-          Partially Matched: <strong>{partiallyMatch}</strong>
-        </span>
-        <span className="badge text-bg-light border fs-6 fw-normal py-2 px-3">
-          Withdrawn: <strong>{withdrawn}</strong>
-        </span>
-      </div>
-      {loading ? (
-        <p className="text-muted">Loading listings…</p>
-      ) : visibleListings.length === 0 ? (
-        <p className="text-muted">No listings yet. Be the first to post one.</p>
-      ) : (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-         {visibleListings.map((listing) => (
-           <div className="col" key={listing.listingId}>
-            <ListingCard listing={listing} justMatched={justMatched.has(listing.listingId)} />
-         </div>
+  function toggleFilter(key) {
+    setActiveFilter((prev) => (prev === key ? null : key));
+  }
+
+   const activeDef = filters.find((f) => f.key === activeFilter);
+  const visibleListings = activeDef
+    ? listings.filter(activeDef.test)
+    : listings.filter((l) => l.status !== "WITHDRAWN");
+
+ return (
+    <div className="sb-feed-page">
+      <div className="sb-feed-inner">
+        <h1 className="sb-feed-title">Listings</h1>
+        <p className="sb-feed-subtitle">
+          Live needs and surplus, matched the instant they cross.
+        </p>
+ 
+        <div className="sb-filter-bar">
+          <button
+            className={`sb-pill sb-pill-all ${activeFilter === null ? "active" : ""}`}
+            onClick={() => setActiveFilter(null)}
+          >
+            All
+          </button>
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              className={`sb-pill ${f.cls} ${activeFilter === f.key ? "active" : ""}`}
+              onClick={() => toggleFilter(f.key)}
+              aria-pressed={activeFilter === f.key}
+            >
+              {f.label} <span className="sb-pill-count">{f.count}</span>
+            </button>
           ))}
         </div>
-      )}
+ 
+        {loading ? (
+          <p className="text-muted">Loading listings...</p>
+        ) : visibleListings.length === 0 ? (
+          <p className="text-muted">
+            {activeDef ? `No listings match "${activeDef.label}" right now.` : "No listings yet. Be the first to post one."}
+          </p>
+        ) : (
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 sb-feed-grid">
+            {visibleListings.map((listing) => (
+              <div className="col sb-card-in" key={listing.listingId}>
+                <ListingCard listing={listing} justMatched={justMatched.has(listing.listingId)} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
+ 
 export default ListingFeedPage;

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,  useRef  } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import StatusBadge from "../components/feed/StatusBadge";
 import UrgencyBadge from "../components/feed/UrgencyBadge";
 import { useAuth } from "../context/useAuth"; 
+import { Client } from "@stomp/stompjs";
 
 function formatDate(dateString) {
   if (!dateString) return null;
@@ -34,6 +35,34 @@ function ListingDetailPage() {
     };
     fetchListing();
   }, [listingId]);
+
+  const stompClientRef = useRef(null);
+
+useEffect(() => {
+  if (!listing) return;
+
+  const client = new Client({
+    brokerURL: "ws://localhost:8080/ws",
+    reconnectDelay: 5000,
+  });
+
+    client.onConnect = () => {
+      client.subscribe(`/topic/listings/${listing.categoryId}`, (message) => {
+        const updated = JSON.parse(message.body);
+        const match = updated.find((l) => l.listingId === Number(listingId));
+        if (match) {
+          setListing(match);
+        }
+      });
+    };
+
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      client.deactivate();
+    };
+  }, [listing, listing.categoryId, listingId]);
   
   //for deleting
 async function handleWithdraw() {

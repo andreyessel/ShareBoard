@@ -7,23 +7,36 @@ function ListingFeedPage() {
   const [loading, setLoading] = useState(true);
   const stompClientRef = useRef(null);
   const subscribedCategories = useRef(new Set());
+  const [justMatched, setJustMatched] = useState(new Set());
 
   // Function to subscribe to STOMP topics per category
   const subscribeToCategory = useCallback((client, categoryId) => {
-    if (!client || !client.connected) return;
-    if (subscribedCategories.current.has(categoryId)) return;
+  if (!client || !client.connected) return;
+  if (subscribedCategories.current.has(categoryId)) return;
 
-    subscribedCategories.current.add(categoryId);
+  subscribedCategories.current.add(categoryId);
 
-    client.subscribe(`/topic/listings/${categoryId}`, (message) => {
-      const updated = JSON.parse(message.body); // array of Listing objects
-      setListings((prev) => {
-        const map = new Map(prev.map((l) => [l.listingId, l]));
-        updated.forEach((l) => map.set(l.listingId, l)); // upsert listing
-        return Array.from(map.values());
-      });
+  client.subscribe(`/topic/listings/${categoryId}`, (message) => {
+    const updated = JSON.parse(message.body);
+
+    setListings((prev) => {
+      const map = new Map(prev.map((l) => [l.listingId, l]));
+      updated.forEach((l) => map.set(l.listingId, l));
+      return Array.from(map.values());
     });
-  }, []);
+
+    // flag these listings as "just matched" for the visual flash
+    const updatedIds = updated.map((l) => l.listingId);
+    setJustMatched((prev) => new Set([...prev, ...updatedIds]));
+    setTimeout(() => {
+      setJustMatched((prev) => {
+        const next = new Set(prev);
+        updatedIds.forEach((id) => next.delete(id));
+        return next;
+      });
+    }, 1500);
+  });
+}, []);
 
   // Initial load from REST API
   useEffect(() => {
@@ -106,10 +119,10 @@ function ListingFeedPage() {
         <p className="text-muted">No listings yet. Be the first to post one.</p>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {visibleListings.map((listing) => (
-            <div className="col" key={listing.listingId}>
-              <ListingCard listing={listing} />
-            </div>
+         {visibleListings.map((listing) => (
+           <div className="col" key={listing.listingId}>
+            <ListingCard listing={listing} justMatched={justMatched.has(listing.listingId)} />
+         </div>
           ))}
         </div>
       )}

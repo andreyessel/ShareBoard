@@ -10,7 +10,7 @@ function formatDate(dateString) {
   });
 }
 
-export default function ListingCard({ listing }) {
+export default function ListingCard({ listing, justMatched}) {
   const isNeed = listing.type === "NEED";
   const deadline = isNeed ? listing.neededBy : listing.availableUntil;
   const deadlineLabel = isNeed ? "Needed by" : "Available thru";
@@ -20,7 +20,7 @@ export default function ListingCard({ listing }) {
       to={`/listings/${listing.listingId}`}
       className="text-decoration-none text-reset"
     >
-      <div className="card h-100 shadow-sm">
+      <div className={`card h-100 shadow-sm ${justMatched ? "match-flash" : ""}`}>
         <div className="card-body d-flex flex-column">
           <div className="d-flex justify-content-between align-items-start mb-2">
             <span
@@ -34,7 +34,7 @@ export default function ListingCard({ listing }) {
              <p className="text-muted small mb-1">
                 {listing.categoryName} · {listing.ownerUsername}
              </p>
-             
+
           <h2 className="h5 mb-1">
             {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
           </h2>

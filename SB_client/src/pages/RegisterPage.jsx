@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import PasswordInput from "../components/PasswordInput";
 
 function RegisterPage() {
   const [form, setForm] = useState({ username: "", passwordHash: "", organization: false });
@@ -61,13 +62,12 @@ function RegisterPage() {
           />
         </div>
         <div className="mb-3 form-check">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            id="organization"
-            name="organization"
-            checked={form.organization}
+          <PasswordInput
+            id="passwordHash"
+            name="passwordHash"
+            value={form.passwordHash}
             onChange={handleChange}
+            autoComplete="new-password"
           />
           <label className="form-check-label" htmlFor="organization">
             I'm registering as an organization

@@ -71,11 +71,19 @@ function EditListingPage() {
     }
   }
 
-  if (loading) return <p className="text-muted py-4">Loading…</p>;
+    if (loading) return <p className="text-muted py-4">Loading...</p>;
   if (!listing) {
     return (
       <div className="py-4">
         <p className="text-muted">Listing not found.</p>
+        <Link to="/">Back to feed</Link>
+      </div>
+    );
+  }
+  if (!user || user.userId !== listing.userId) {
+    return (
+      <div className="py-4">
+        <p className="text-muted">You can only edit your own listings.</p>
         <Link to="/">Back to feed</Link>
       </div>
     );

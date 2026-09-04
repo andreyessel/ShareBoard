@@ -62,7 +62,7 @@ useEffect(() => {
     return () => {
       client.deactivate();
     };
-  }, [listing, listing.categoryId, listingId]);
+  }, [listing?.categoryId, listingId]);
   
   //for deleting
 async function handleWithdraw() {
@@ -103,8 +103,7 @@ async function handleWithdraw() {
   const isNeed = listing.type === "NEED";
   const deadline = isNeed ? listing.neededBy : listing.availableUntil;
   const deadlineLabel = isNeed ? "Needed by" : "Available until";
-  const canEdit = listing.status === "OPEN";
-
+  const canEdit = listing.status === "OPEN" && user && user.userId === listing.userId;
   return (
     <div className="py-4" style={{ maxWidth: "560px", margin: "0 auto" }}>
       <Link to="/" className="d-inline-block mb-3 text-decoration-none">

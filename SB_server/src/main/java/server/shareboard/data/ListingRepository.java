@@ -17,5 +17,5 @@ public interface ListingRepository {
 
     boolean update(Listing listing);
 
-    boolean deleteById(int listingId);
+
 }

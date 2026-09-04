@@ -92,7 +92,7 @@ public class ListingService {
            repository.update(updated);
        }
 
-       //broadcasting the different is the list isn't empty
+       //broadcasting the different if the list isn't empty
        List<Listing> toBroadcast = matchResult.getUpdatedListings().isEmpty()
                ? List.of(created)
                : matchResult.getUpdatedListings();

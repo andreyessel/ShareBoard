@@ -3,7 +3,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import AppRouter from './AppRouter'
 
 function App() {
-  return <AppRouter />
+   return (
+    <div className="sb-app">
+      <AppRouter />
+    </div>
+  )
 }
 
 export default App

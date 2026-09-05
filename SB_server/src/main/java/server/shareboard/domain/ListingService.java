@@ -9,6 +9,7 @@ import server.shareboard.models.ListingType;
 import server.shareboard.models.MatchLine;
 import server.shareboard.models.Status;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -55,6 +56,25 @@ public class ListingService {
             return result;
         }
 
+         // Validating date based on Type
+           if (listing.getType() == ListingType.NEED) {
+               if (listing.getNeededBy() == null) {
+                   result.addErrorMessage("Needed By date is required.", ResultType.INVALID);
+               } else if (listing.getNeededBy().isBefore(LocalDate.now())) {
+                   result.addErrorMessage("Needed By date cannot be in the past.", ResultType.INVALID);
+               }
+               listing.setAvailableUntil(null);
+           } else if (listing.getType() == ListingType.SURPLUS) {
+               if (listing.getAvailableUntil() == null) {
+                   result.addErrorMessage("Available Until date is required.", ResultType.INVALID);
+               } else if (listing.getAvailableUntil().isBefore(LocalDate.now())) {
+                   result.addErrorMessage("Available Until date cannot be in the past.", ResultType.INVALID);
+               }
+               listing.setNeededBy(null);
+           }
+
+
+
        listing.setQuantityRemaining(listing.getQuantity());
        listing.setCreatedAt(LocalDateTime.now());
        Listing created = repository.create(listing);
@@ -72,12 +92,11 @@ public class ListingService {
            repository.update(updated);
        }
 
-       //broadcasting the different is the list isn't empty
-       if (!matchResult.getUpdatedListings().isEmpty()) {
-           int categoryId = listing.getCategoryId();
-           messagingTemplate.convertAndSend("/topic/listings/" + categoryId,
-                   matchResult.getUpdatedListings());
-       }
+       //broadcasting the different if the list isn't empty
+       List<Listing> toBroadcast = matchResult.getUpdatedListings().isEmpty()
+               ? List.of(created)
+               : matchResult.getUpdatedListings();
+       messagingTemplate.convertAndSend("/topic/listings/" + listing.getCategoryId(), toBroadcast);
 
         result.setPayload(created);
         return result;
@@ -206,14 +225,15 @@ public class ListingService {
             return result;
         }
 
-        boolean deleted = repository.deleteById(listingId);
-        if (!deleted) {
-            result.addErrorMessage("Could not delete listing", ResultType.INVALID);
+        existing.setStatus(Status.WITHDRAWN);
+        boolean updated = repository.update(existing);
+        if (!updated) {
+            result.addErrorMessage("Could not withdraw listing", ResultType.INVALID);
             return result;
         }
 
-        //broadcast after deleted
-        existing.setStatus(Status.WITHDRAWN);
+        matchingEngine.withdraw(listingId, existing.getType());
+
         messagingTemplate.convertAndSend("/topic/listings/" + existing.getCategoryId(), List.of(existing));
 
         result.setPayload(existing);

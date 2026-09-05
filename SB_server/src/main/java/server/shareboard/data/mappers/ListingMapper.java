@@ -21,7 +21,7 @@ public class ListingMapper implements RowMapper<Listing> {
         String urgencyStr = rs.getString("urgency");
         Urgency urgency = urgencyStr == null ? null : Urgency.valueOf(urgencyStr);
 
-        return new Listing(
+        Listing listing = new Listing(
                 rs.getInt("id"),
                 rs.getInt("user_id"),
                 rs.getInt("category_id"),
@@ -34,5 +34,9 @@ public class ListingMapper implements RowMapper<Listing> {
                 Status.valueOf(rs.getString("status")),
                 rs.getTimestamp("created_at").toLocalDateTime()
         );
+
+        listing.setOwnerUsername(rs.getString("owner_username"));
+        listing.setCategoryName(rs.getString("category_name"));
+        return listing;
     }
 }

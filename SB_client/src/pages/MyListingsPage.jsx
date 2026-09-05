@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ListingCard from "../components/feed/ListingCard";
 import { useAuth } from "../context/useAuth";
 
@@ -23,15 +24,18 @@ function MyListingsPage() {
   }, [user.userId]);
 
   return (
-    <div className="py-4">
-      <h1 className="h3 mb-4">My Listings</h1>
+    <div className="sb-mylistings-page">
+      <h1 className="sb-mylistings-title">My Listings</h1>
 
       {loading ? (
         <p className="text-muted">Loading…</p>
       ) : listings.length === 0 ? (
-        <p className="text-muted">
-          You haven't posted anything yet. Head to the feed to post a need or surplus.
-        </p>
+        <div className="sb-empty-state">
+          <p className="text-muted mb-3">
+            You haven't posted anything yet. Head to the feed to post a need or surplus.
+          </p>
+          <Link to="/new-listing" className="btn btn-primary sb-btn-brand">+ Post a listing</Link>
+        </div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {listings.map((listing) => (

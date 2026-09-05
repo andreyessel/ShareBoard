@@ -1,15 +1,19 @@
-   .lp-root{
-          --lp-ink:#131A2B; --lp-paper:#FFFFFF;
-          --lp-teal:#0E7C61; --lp-teal-dark:#0A5C49;
-          --lp-marigold:#F2A93B; --lp-marigold-dark:#8A5A0E;
-          --lp-rose:#E85D75; --lp-rose-bg:#FBE4E8; --lp-rose-dark:#8C2D3D;
-          --lp-navy:#101B33; --lp-cream:#FBEFD9; --lp-muted:#5B6478;
-          --lp-border:rgba(19,26,43,0.1);
-          font-family:'Inter',system-ui,sans-serif; color:var(--lp-ink);
-        }
-        .lp-root h1,.lp-root h2{ font-family:'Fraunces',serif; font-weight:500; line-height:1.15; margin:0; }
-        .lp-root p{ line-height:1.65; margin:0; }
-        .lp-root a{ color:inherit; }
+   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Inter:wght@400;500;600;700&display=swap');
+   
+.lp-root{
+       --lp-ink:#131A2B; --lp-paper:#FFFFFF;
+       --lp-teal:#0E7C61; --lp-teal-dark:#0A5C49;
+       --lp-marigold:#F2A93B; --lp-marigold-dark:#8A5A0E;
+       --lp-rose:#E85D75; --lp-rose-bg:#FBE4E8; --lp-rose-dark:#8C2D3D;
+       --lp-navy:#101B33; --lp-cream:#FBEFD9; --lp-muted:#5B6478;
+       --lp-border:rgba(19,26,43,0.1);
+       font-family:'Inter',system-ui,sans-serif; color:var(--lp-ink);
+     }
+     .lp-root h1,.lp-root h2{ font-family:'Fraunces',serif; font-weight:500; line-height:1.15; margin:0; }
+     .lp-root p{ line-height:1.65; margin:0; }
+     .lp-root a{ color:inherit; }
+
+      .lp-root.lp-embedded section:first-of-type{ padding-top:64px; }
  
         .lp-nav{
           position:fixed; top:0; left:0; right:0; z-index:100;

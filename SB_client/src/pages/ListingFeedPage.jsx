@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Client } from "@stomp/stompjs";
 import ListingCard from "../components/feed/ListingCard";
-// import "./LandingPage.css";
 
 function ListingFeedPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState(null); 
+  const [activeFilter, setActiveFilter] = useState(null);
+  const [live, setLive] = useState(false);
   const stompClientRef = useRef(null);
   const subscribedCategories = useRef(new Set());
   const [justMatched, setJustMatched] = useState(new Set());
+  const [bumpedKeys, setBumpedKeys] = useState(new Set());
+  const prevCounts = useRef({});
 
   // Function to subscribe to STOMP topics per category
   const subscribeToCategory = useCallback((client, categoryId) => {
@@ -66,9 +68,13 @@ function ListingFeedPage() {
 
     client.onConnect = () => {
       stompClientRef.current = client;
+      setLive(true);
       // Immediately subscribe to categories of all currently loaded listings
       listings.forEach((l) => subscribeToCategory(client, l.categoryId));
     };
+
+    client.onWebSocketClose = () => setLive(false);
+    client.onDisconnect = () => setLive(false);
 
     client.activate();
     stompClientRef.current = client;
@@ -101,6 +107,25 @@ function ListingFeedPage() {
     { key: "withdrawn", label: "Withdrawn", count: withdrawn, cls: "sb-pill-withdrawn", test: (l) => l.status === "WITHDRAWN" },
   ];
 
+  // Give the stats bar "life": briefly highlight any pill whose count just changed,
+  // so a live match happening elsewhere is visible even if that pill isn't the active filter.
+  useEffect(() => {
+    const changed = new Set();
+    filters.forEach((f) => {
+      const prev = prevCounts.current[f.key];
+      if (prev !== undefined && prev !== f.count) {
+        changed.add(f.key);
+      }
+      prevCounts.current[f.key] = f.count;
+    });
+    if (changed.size > 0) {
+      setBumpedKeys(changed);
+      const timeout = setTimeout(() => setBumpedKeys(new Set()), 900);
+      return () => clearTimeout(timeout);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openNeeds, openSurplus, matched, partiallyMatched, withdrawn]);
+
   function toggleFilter(key) {
     setActiveFilter((prev) => (prev === key ? null : key));
   }
@@ -115,9 +140,10 @@ function ListingFeedPage() {
       <div className="sb-feed-inner">
         <h1 className="sb-feed-title">Listings</h1>
         <p className="sb-feed-subtitle">
-          Live needs and surplus, matched the instant they cross.
+          <span className={`sb-live-dot ${live ? "sb-live-dot--on" : ""}`} aria-hidden="true" />
+          {live ? "Live" : "Connecting…"} — needs and surplus, matched the instant they cross.
         </p>
- 
+
         <div className="sb-filter-bar">
           <button
             className={`sb-pill sb-pill-all ${activeFilter === null ? "active" : ""}`}
@@ -128,7 +154,7 @@ function ListingFeedPage() {
           {filters.map((f) => (
             <button
               key={f.key}
-              className={`sb-pill ${f.cls} ${activeFilter === f.key ? "active" : ""}`}
+              className={`sb-pill ${f.cls} ${activeFilter === f.key ? "active" : ""} ${bumpedKeys.has(f.key) ? "sb-pill-bump" : ""}`}
               onClick={() => toggleFilter(f.key)}
               aria-pressed={activeFilter === f.key}
             >
@@ -136,7 +162,7 @@ function ListingFeedPage() {
             </button>
           ))}
         </div>
- 
+
         {loading ? (
           <p className="text-muted">Loading listings...</p>
         ) : visibleListings.length === 0 ? (
@@ -156,5 +182,5 @@ function ListingFeedPage() {
     </div>
   );
 }
- 
+
 export default ListingFeedPage;

@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./LandingPage.css";
 
-function LandingPage({ hideAuthLinks = false }) {
-  useEffect(() => {
+function LandingPage({ hideAuthLinks = false, embedded = false }) {  useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
     const railButtons = document.querySelectorAll(".lp-rail button");
     const nav = document.getElementById("lpNav");
@@ -39,24 +38,26 @@ function LandingPage({ hideAuthLinks = false }) {
     return () => io.disconnect();
   }, []);
 
-  return (
-    <div className="lp-root">
+   return (
+    <div className={`lp-root${embedded ? " lp-embedded" : ""}`}>
 
-      <nav id="lpNav" className="lp-nav">
-        <div className="lp-brand">
-          <svg width="26" height="26" viewBox="0 0 26 26">
-            <circle cx="10" cy="13" r="8" fill="#0E7C61" opacity="0.9" />
-            <circle cx="17" cy="13" r="8" fill="#F2A93B" opacity="0.85" />
-          </svg>
-          ShareBoard
-        </div>
-        {!hideAuthLinks && (
-          <div className="lp-nav-actions">
-            <Link className="lp-btn lp-btn-ghost" to="/login">Log in</Link>
-            <Link className="lp-btn lp-btn-solid" to="/register">Sign up</Link>
+      {!embedded && (
+        <nav id="lpNav" className="lp-nav">
+          <div className="lp-brand">
+            <svg width="26" height="26" viewBox="0 0 26 26">
+              <circle cx="10" cy="13" r="8" fill="#0E7C61" opacity="0.9" />
+              <circle cx="17" cy="13" r="8" fill="#F2A93B" opacity="0.85" />
+            </svg>
+            ShareBoard
           </div>
-        )}
-      </nav>
+          {!hideAuthLinks && (
+            <div className="lp-nav-actions">
+              <Link className="lp-btn lp-btn-ghost" to="/login">Log in</Link>
+              <Link className="lp-btn lp-btn-solid" to="/register">Sign up</Link>
+            </div>
+          )}
+        </nav>
+      )}
 
       <div className="lp-rail" id="lpRail">
         <button data-target="lp-need" className="active" aria-label="The need"></button>

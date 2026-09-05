@@ -15,10 +15,10 @@ import AboutPage from "./pages/AboutPage"
 function AppRouter() {
   const routes = [
     { path: "/", element: <HomeGate /> },
-    { path: "/about", element: <AboutPage /> },
     {
       element: <Layout />,
       children: [
+        { path: "/about", element: <AboutPage /> },
         { path: "/feed", element: <ListingFeedPage /> },
         { path: "/listings/:listingId", element: <ListingDetailPage /> },
         { path: "/new-listing", element: <RequireAuth><NewListingPage /></RequireAuth> },

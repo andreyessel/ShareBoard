@@ -5,7 +5,9 @@ function Layout() {
   return (
     <>
       <NavBar />
+       <main className="sb-main">
       <Outlet />
+      </main>
     </>
   )
 }

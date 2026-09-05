@@ -1,29 +1,38 @@
-// import { createBrowserRouter, RouterProvider } from "react-router-dom"
-// import Layout from "./page/Layout"
-// import ListingFeedPage from "./page/ListingFeedPage"
-// import ListingDetailPage from "./page/ListingDetailPage"
-// import NewListingPage from "./page/NewListingPage"
-// import MyListingsPage from "./page/MyListingsPage"
-// import NotFound from "./page/NotFound"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import Layout from "./components/Layout"
+import HomeGate from "./pages/HomeGate"
+import ListingFeedPage from "./pages/ListingFeedPage"
+import ListingDetailPage from "./pages/ListingDetailPage"
+import NewListingPage from "./pages/NewListingPage"
+import MyListingsPage from "./pages/MyListingsPage"
+import NotFound from "./pages/NotFound"
+import EditListingPage from "./pages/EditListingPage"
+import LoginPage from "./pages/LoginPage"
+import RegisterPage from "./pages/RegisterPage"
+import RequireAuth from "./components/RequireAuth"
+import AboutPage from "./pages/AboutPage"
 
+function AppRouter() {
+  const routes = [
+    { path: "/", element: <HomeGate /> },
+    {
+      element: <Layout />,
+      children: [
+        { path: "/about", element: <AboutPage /> },
+        { path: "/feed", element: <ListingFeedPage /> },
+        { path: "/listings/:listingId", element: <ListingDetailPage /> },
+        { path: "/new-listing", element: <RequireAuth><NewListingPage /></RequireAuth> },
+        { path: "/my-listings", element: <RequireAuth><MyListingsPage /></RequireAuth> },
+        { path: "/listings/:listingId/edit", element: <RequireAuth><EditListingPage /></RequireAuth> },
+        { path: "/login", element: <LoginPage /> },
+        { path: "/register", element: <RegisterPage /> },
+        { path: "*", element: <NotFound /> },
+      ],
+    },
+  ]
 
-// function AppRouter() {
-//   const routes = [
-//     {
-//       path: "/",
-//       element: <Layout />,
-//       children: [
-//         { index: true, element: <ListingFeedPage /> },
-//         { path: "listings/:listingId", element: <ListingDetailPage /> },
-//         { path: "new-listing", element: <NewListingPage /> },
-//         { path: "my-listings", element: <MyListingsPage /> },
-//         { path: "*", element: <NotFound />},
-//       ],
-//     },
-//   ]
+  const router = createBrowserRouter(routes)
+  return <RouterProvider router={router} />
+}
 
-//   const router = createBrowserRouter(routes)
-//   return <RouterProvider router={router} />
-// }
-
-// export default AppRouter
+export default AppRouter

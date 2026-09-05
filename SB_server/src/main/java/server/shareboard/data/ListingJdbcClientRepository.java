@@ -18,14 +18,21 @@ public class ListingJdbcClientRepository implements ListingRepository{
         this.jdbcClient = jdbcClient;
     }
 
+    private static final String SELECT_WITH_JOINS = """
+            select l.*, u.username as owner_username, c.name as category_name
+            from listing l
+            join `user` u on l.user_id = u.id
+            join category c on l.category_id = c.id
+            """;
+
     @Override
     public List<Listing> findAll() {
-        return jdbcClient.sql("select * from listing limit 100").query(new ListingMapper()).list();
+        return jdbcClient.sql(SELECT_WITH_JOINS + " limit 100").query(new ListingMapper()).list();
     }
 
     @Override
     public Listing findById(int listingId) {
-        return jdbcClient.sql("select * from listing where id = ?")
+        return jdbcClient.sql(SELECT_WITH_JOINS + " where l.id = ?")
                 .param(listingId)
                 .query(new ListingMapper())
                 .optional().orElse(null);
@@ -33,7 +40,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
 
     @Override
     public List<Listing> findByUserId(int userId) {
-        return jdbcClient.sql("select * from listing where user_id = ?")
+        return jdbcClient.sql(SELECT_WITH_JOINS + " where l.user_id = ?")
                 .param(userId)
                 .query(new ListingMapper())
                 .list();
@@ -90,10 +97,5 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .update() > 0;
     }
 
-    @Override
-    public boolean deleteById(int listingId) {
-        return jdbcClient.sql("delete from listing where id = ?;")
-                .param(listingId)
-                .update() > 0;
-    }
+
 }

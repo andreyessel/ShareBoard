@@ -16,6 +16,9 @@ public class Listing {
     private Status status;
     private LocalDateTime createdAt;
 
+    private String ownerUsername;
+    private String categoryName;
+
     public Listing() {
     }
     public Listing(int listingId, int userId, int categoryId, ListingType type, int quantity, int quantityRemaining, Urgency urgency, LocalDate neededBy, LocalDate availableUntil, Status status, LocalDateTime createdAt) {
@@ -118,5 +121,21 @@ public class Listing {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

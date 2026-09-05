@@ -14,12 +14,24 @@ function formatDate(dateString) {
   });
 }
 
+function formatDateTime(dateString) {
+  if (!dateString) return null;
+  return new Date(dateString).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function ListingDetailPage() {
    const { user } = useAuth(); 
   const { listingId } = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [matchHistory, setMatchHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +46,19 @@ function ListingDetailPage() {
       setLoading(false);
     };
     fetchListing();
+  }, [listingId]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setHistoryLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8080/api/listings/${listingId}/matches`);
+        setMatchHistory(response.ok ? await response.json() : []);
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+    fetchHistory();
   }, [listingId]);
 
   const stompClientRef = useRef(null);
@@ -52,6 +77,10 @@ useEffect(() => {
         const match = updated.find((l) => l.listingId === Number(listingId));
         if (match) {
           setListing(match);
+          fetch(`http://localhost:8080/api/listings/${listingId}/matches`)
+            .then((res) => (res.ok ? res.json() : []))
+            .then(setMatchHistory)
+            .catch(() => {});
         }
       });
     };
@@ -75,18 +104,6 @@ async function handleWithdraw() {
   }
 }
 
-  //   //for updating
-  // async function handleEdit() {
-
-  //   const response = await fetch(`http://localhost:8080/api/listings/${listingId}?requesterId=${listing.userId}`,
-
-  //   );
-
-  //   if (response.ok) {
-  //     navigate("/");
-  //   }
-  // }
-
   if (loading) {
     return <p className="text-muted py-4">Loading…</p>;
   }
@@ -105,11 +122,11 @@ async function handleWithdraw() {
   const deadlineLabel = isNeed ? "Needed by" : "Available until";
   const canEdit = listing.status === "OPEN" && user && user.userId === listing.userId;
   return (
-    <div className="py-4" style={{ maxWidth: "560px", margin: "0 auto" }}>
-      <Link to="/" className="d-inline-block mb-3 text-decoration-none">
+    <div className="sb-detail-page">
+      <Link to="/" className="d-inline-block mb-3 text-decoration-none sb-back-link">
         &larr; Back </Link>
 
-      <div className="card shadow-sm">
+      <div className={`card shadow-sm sb-detail-card ${isNeed ? "sb-listing-card--need" : "sb-listing-card--surplus"}`}>
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-start mb-2">
             <span
@@ -177,6 +194,30 @@ async function handleWithdraw() {
             </>
           )}
         </div>
+      </div>
+
+      <div className="sb-match-history-card">
+        <h2 className="sb-match-history-title">Match history</h2>
+        {historyLoading ? (
+          <p className="text-muted small">Loading…</p>
+        ) : matchHistory.length === 0 ? (
+          <p className="text-muted small sb-match-history-empty">
+            No matches yet — this listing hasn't crossed with anything on the other side.
+          </p>
+        ) : (
+          <ul className="sb-match-history-list">
+            {matchHistory.map((m) => (
+              <li key={m.matchLineId} className="sb-match-history-item">
+                <span className="sb-match-history-qty">{m.quantityMatched}</span>
+                <span className="sb-match-history-text">
+                  matched with <strong>{m.counterpartUsername}</strong>
+                  <span className="text-muted"> ({m.counterpartRole === "NEED" ? "need" : "surplus"})</span>
+                </span>
+                <span className="sb-match-history-time text-muted">{formatDateTime(m.matchedAt)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

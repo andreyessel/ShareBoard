@@ -19,7 +19,7 @@ public class ListingJdbcClientRepository implements ListingRepository{
     }
 
     private static final String SELECT_WITH_JOINS = """
-            select l.*, u.username as owner_username, c.name as category_name
+            select l.*, u.username as owner_username, u.is_organization as owner_is_organization, c.name as category_name
             from listing l
             join `user` u on l.user_id = u.id
             join category c on l.category_id = c.id
@@ -49,8 +49,8 @@ public class ListingJdbcClientRepository implements ListingRepository{
     @Override
     public Listing create(Listing listing) {
         final String sql = """
-                insert into listing ( user_id, category_id, type, quantity, quantity_remaining, urgency, needed_by, available_until, status)
-                values( :user_id, :category_id, :type, :quantity, :quantity_remaining, :urgency, :needed_by, :available_until, :status);
+                insert into listing ( user_id, category_id, type, quantity, quantity_remaining, urgency, needed_by, available_until, status, anonymous)
+                values( :user_id, :category_id, :type, :quantity, :quantity_remaining, :urgency, :needed_by, :available_until, :status, :anonymous);
                 """;
 
         KeyHolder keyHolder= new GeneratedKeyHolder();
@@ -64,12 +64,13 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("needed_by", listing.getNeededBy())
                 .param("available_until", listing.getAvailableUntil())
                 .param("status", listing.getStatus().name())
+                .param("anonymous", listing.isAnonymous())
                 .update(keyHolder, "id");
 
         if (rowsAffected == 0) {
             return null;
         }
-     listing.setListingId(keyHolder.getKey().intValue());
+        listing.setListingId(keyHolder.getKey().intValue());
         return listing;
     }
 
@@ -96,6 +97,4 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("status", listing.getStatus().name())
                 .update() > 0;
     }
-
-
 }

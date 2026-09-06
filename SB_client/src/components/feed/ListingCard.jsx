@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import UrgencyBadge from "./UrgencyBadge";
 import StatusBadge from "./StatusBadge";
+import { ClockIcon, PackageIcon } from "../icons/MiniIcons";
 
 function formatDate(dateString) {
   if (!dateString) return null;
@@ -13,7 +14,7 @@ function formatDate(dateString) {
 export default function ListingCard({ listing, justMatched}) {
   const isNeed = listing.type === "NEED";
   const deadline = isNeed ? listing.neededBy : listing.availableUntil;
-  const deadlineLabel = isNeed ? "Needed by" : "Available thru";
+  const deadlineLabel = isNeed ? "by" : "thru";
   const pctRemaining = listing.quantity > 0
     ? Math.round((listing.quantityRemaining / listing.quantity) * 100)
     : 0;
@@ -24,27 +25,27 @@ export default function ListingCard({ listing, justMatched}) {
       className="text-decoration-none text-reset"
     >
       <div
-        className={`card h-100 shadow-sm sb-listing-card ${
+        className={`sb-listing-card ${
           isNeed ? "sb-listing-card--need" : "sb-listing-card--surplus"
         } ${justMatched ? "match-flash" : ""}`}
       >
-        <div className="card-body d-flex flex-column">
+        <div className="sb-listing-card-body">
           <div className="d-flex justify-content-between align-items-start mb-2">
-            <span
-              className={`badge ${ isNeed
-                  ? "text-bg-danger-subtle text-danger-emphasis"
-                  : "text-bg-success-subtle text-success-emphasis"
-              }`} > {isNeed ? "Need" : "Surplus"}
-            </span> {isNeed && <UrgencyBadge urgency={listing.urgency} />}
+            <div>
+              <h2 className="sb-listing-title">
+                {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
+              </h2>
+              <p className="sb-listing-owner">
+                {listing.ownerUsername}
+                {listing.ownerIsOrganization && (
+                  <span className="sb-verified-badge" title="Verified organization">✓ Org</span>
+                )}
+              </p>
+            </div>
+            {isNeed ? <UrgencyBadge urgency={listing.urgency} /> : <StatusBadge status={listing.status} />}
           </div>
 
-             <p className="text-muted small mb-1">
-                {listing.categoryName} · {listing.ownerUsername}
-             </p>
-
-          <h2 className="h5 mb-1">
-            {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
-          </h2>
+          <p className="sb-listing-category">{listing.categoryName}</p>
 
           <div className="sb-remaining-track" aria-hidden="true">
             <div
@@ -52,14 +53,21 @@ export default function ListingCard({ listing, justMatched}) {
               style={{ width: `${pctRemaining}%` }}
             />
           </div>
-          <p className="text-muted small mb-3">{listing.quantityRemaining} remaining</p>
 
-          <div className="mt-auto d-flex justify-content-between align-items-center">
-            <span className="small text-muted">
-              {deadlineLabel} {formatDate(deadline) ?? "—"}
+          <div className="sb-listing-meta">
+            <span className="sb-listing-meta-item">
+              <PackageIcon /> {listing.quantityRemaining} remaining
             </span>
-            <StatusBadge status={listing.status} />
+            <span className="sb-listing-meta-item">
+              <ClockIcon /> {deadlineLabel} {formatDate(deadline) ?? "—"}
+            </span>
           </div>
+
+          {isNeed && (
+            <div className="sb-listing-footer">
+              <StatusBadge status={listing.status} />
+            </div>
+          )}
         </div>
       </div>
     </Link>

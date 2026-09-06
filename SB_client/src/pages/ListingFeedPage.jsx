@@ -170,12 +170,16 @@ function ListingFeedPage() {
  return (
     <div className="sb-feed-page">
       <div className="sb-feed-inner">
-        <h1 className="sb-feed-title">Listings</h1>
-        <p className="sb-feed-subtitle">
-          <span className={`sb-live-dot ${live ? "sb-live-dot--on" : ""}`} aria-hidden="true" />
-          {live ? "Matching engine live" : "Connecting…"} — needs and surplus, matched the instant they cross.
-        </p>
-
+             <div className="sb-feed-header">
+          <div>
+            <h1 className="sb-feed-title">Listings</h1>
+            <p className="sb-feed-subtitle">Needs and surplus, matched the instant they cross.</p>
+          </div>
+          <span className={`sb-live-pill ${live ? "sb-live-pill--on" : ""}`}>
+            <span className={`sb-live-dot ${live ? "sb-live-dot--on" : ""}`} aria-hidden="true" />
+            {live ? "Matching engine live" : "Connecting…"}
+          </span>
+        </div>
         <div className="sb-feed-layout">
           <div>
             <div className="sb-filter-row">

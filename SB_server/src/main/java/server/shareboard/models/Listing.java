@@ -15,8 +15,8 @@ public class Listing {
     private LocalDate availableUntil;
     private Status status;
     private LocalDateTime createdAt;
+    //New feature: anonymous, for a giver who does not want to be known
     private boolean anonymous;
-
     private String ownerUsername;
     private boolean ownerIsOrganization;
     private String categoryName;

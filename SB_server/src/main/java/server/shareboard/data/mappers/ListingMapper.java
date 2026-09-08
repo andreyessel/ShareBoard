@@ -40,7 +40,7 @@ public class ListingMapper implements RowMapper<Listing> {
         listing.setCategoryName(rs.getString("category_name"));
         listing.setAnonymous(rs.getBoolean("anonymous"));
 
-
+        // Keeping the anonymous giver private
         if (listing.isAnonymous() && listing.getType() == ListingType.SURPLUS) {
             listing.setOwnerUsername("Anonymous Donor");
             listing.setOwnerIsOrganization(false);

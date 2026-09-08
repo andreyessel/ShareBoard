@@ -2,11 +2,6 @@ package server.shareboard.domain;
 
 import java.time.LocalDateTime;
 
-/**
- * One entry in the site-wide "recent matches" feed — used to seed the Feed
- * page's activity panel with real history on load, not just live events
- * that happen after the page is already open.
- */
 public class RecentMatchEntry {
     private int matchLineId;
     private String categoryName;

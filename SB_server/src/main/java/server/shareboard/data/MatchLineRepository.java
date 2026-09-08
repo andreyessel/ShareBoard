@@ -11,7 +11,7 @@ public interface MatchLineRepository {
     List<MatchLine> findAll();
 
     List<MatchLine> findByListingId(int listingId);
-    // list of match history
+
     List<MatchHistoryEntry> findHistoryForListing(int listingId);
 
     List<RecentMatchEntry> findRecent(int limit);

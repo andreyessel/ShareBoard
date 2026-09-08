@@ -27,4 +27,4 @@ public class MatchController {
         int safeLimit = Math.min(Math.max(limit, 1), 50);
         return new ResponseEntity<>(service.getRecentMatches(safeLimit), HttpStatus.OK);
     }
-}
+}//

@@ -97,4 +97,5 @@ public class ListingJdbcClientRepository implements ListingRepository{
                 .param("status", listing.getStatus().name())
                 .update() > 0;
     }
+    //implented anonymous in jdbc
 }

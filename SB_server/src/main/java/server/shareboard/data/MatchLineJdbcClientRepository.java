@@ -5,7 +5,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import server.shareboard.data.mappers.MatchLineMapper;
-//import server.shareboard.domain.MatchHistoryEntry;
+import server.shareboard.domain.MatchHistoryEntry;
 import server.shareboard.domain.RecentMatchEntry;
 import server.shareboard.models.Listing;
 import server.shareboard.models.MatchLine;
@@ -37,36 +37,36 @@ public class MatchLineJdbcClientRepository implements MatchLineRepository{
                 .list();
     }
 
-//    @Override
-//    public List<MatchHistoryEntry> findHistoryForListing(int listingId) {
-//        return jdbcClient.sql("""
-//                select
-//                    ml.id as match_line_id,
-//                    ml.quantity_matched,
-//                    ml.matched_at,
-//                    case when ml.need_listing_id = :listingId then 'SURPLUS' else 'NEED' end as counterpart_role,
-//                    case when ml.need_listing_id = :listingId then ml.surplus_listing_id else ml.need_listing_id end as counterpart_listing_id,
-//                    u.username as counterpart_username,
-//                    u.is_organization as counterpart_is_organization
-//                from match_line ml
-//                join listing counterpart
-//                    on counterpart.id = case when ml.need_listing_id = :listingId then ml.surplus_listing_id else ml.need_listing_id end
-//                join `user` u on u.id = counterpart.user_id
-//                where ml.need_listing_id = :listingId or ml.surplus_listing_id = :listingId
-//                order by ml.matched_at desc
-//                """)
-//                .param("listingId", listingId)
-//                .query((rs, rowNum) -> new MatchHistoryEntry(
-//                        rs.getInt("match_line_id"),
-//                        rs.getInt("counterpart_listing_id"),
-//                        rs.getString("counterpart_username"),
-//                        rs.getBoolean("counterpart_is_organization"),
-//                        rs.getString("counterpart_role"),
-//                        rs.getInt("quantity_matched"),
-//                        rs.getTimestamp("matched_at").toLocalDateTime()
-//                ))
-//                .list();
-//    }
+    @Override
+    public List<MatchHistoryEntry> findHistoryForListing(int listingId) {
+        return jdbcClient.sql("""
+                select
+                    ml.id as match_line_id,
+                    ml.quantity_matched,
+                    ml.matched_at,
+                    case when ml.need_listing_id = :listingId then 'SURPLUS' else 'NEED' end as counterpart_role,
+                    case when ml.need_listing_id = :listingId then ml.surplus_listing_id else ml.need_listing_id end as counterpart_listing_id,
+                    u.username as counterpart_username,
+                    u.is_organization as counterpart_is_organization
+                from match_line ml
+                join listing counterpart
+                    on counterpart.id = case when ml.need_listing_id = :listingId then ml.surplus_listing_id else ml.need_listing_id end
+                join `user` u on u.id = counterpart.user_id
+                where ml.need_listing_id = :listingId or ml.surplus_listing_id = :listingId
+                order by ml.matched_at desc
+                """)
+                .param("listingId", listingId)
+                .query((rs, rowNum) -> new MatchHistoryEntry(
+                        rs.getInt("match_line_id"),
+                        rs.getInt("counterpart_listing_id"),
+                        rs.getString("counterpart_username"),
+                        rs.getBoolean("counterpart_is_organization"),
+                        rs.getString("counterpart_role"),
+                        rs.getInt("quantity_matched"),
+                        rs.getTimestamp("matched_at").toLocalDateTime()
+                ))
+                .list();
+    }
 
     @Override
     public List<RecentMatchEntry> findRecent(int limit) {

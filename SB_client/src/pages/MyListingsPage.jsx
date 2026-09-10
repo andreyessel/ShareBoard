@@ -24,8 +24,11 @@ function MyListingsPage() {
   }, [user.userId]);
 
   return (
-    <div className="sb-mylistings-page">
+    <div className="sb-mylistings-page-wrap">
+      <div className="sb-page-bar sb-page-bar--mylistings" />
+      <div className="sb-mylistings-page">
       <h1 className="sb-mylistings-title">My Listings</h1>
+      <p className="sb-mylistings-subtitle">Everything you've posted, need or surplus, in one place.</p>
 
       {loading ? (
         <p className="text-muted">Loading…</p>
@@ -37,14 +40,13 @@ function MyListingsPage() {
           <Link to="/new-listing" className="btn btn-primary sb-btn-brand">+ Post a listing</Link>
         </div>
       ) : (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div className="sb-listings-grid">
           {listings.map((listing) => (
-            <div className="col" key={listing.listingId}>
-              <ListingCard listing={listing} />
-            </div>
+            <ListingCard listing={listing} key={listing.listingId} />
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

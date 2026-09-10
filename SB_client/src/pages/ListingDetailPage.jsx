@@ -93,10 +93,9 @@ useEffect(() => {
     };
   }, [listing?.categoryId, listingId]);
   
-  //for deleting
 async function handleWithdraw() {
     const response = await fetch(
-      `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`, // CHANGED
+      `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`,
       { method: "DELETE" }
     );
   if (response.ok) {
@@ -118,63 +117,99 @@ async function handleWithdraw() {
   }
 
   const isNeed = listing.type === "NEED";
+  const isDone = listing.status === "MATCHED";
   const deadline = isNeed ? listing.neededBy : listing.availableUntil;
   const deadlineLabel = isNeed ? "Needed by" : "Available until";
   const canEdit = listing.status === "OPEN" && user && user.userId === listing.userId;
-  return (
-    <div className="sb-detail-page">
-      <Link to="/" className="d-inline-block mb-3 text-decoration-none sb-back-link">
-        &larr; Back </Link>
+  const canOfferSurplus =
+    isNeed &&
+    (listing.status === "OPEN" || listing.status === "PARTIALLY_MATCHED") &&
+    user;
 
-      <div className={`card shadow-sm sb-detail-card ${isNeed ? "sb-listing-card--need" : "sb-listing-card--surplus"}`}>
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-start mb-2">
-            <span
-              className={`badge ${ isNeed
-                  ? "text-bg-danger-subtle text-danger-emphasis"
-                  : "text-bg-success-subtle text-success-emphasis"
-              }`}
-            >  {isNeed ? "Need" : "Surplus"} </span>
-            {isNeed && <UrgencyBadge urgency={listing.urgency} />}
+  function handleOfferSurplus() {
+    navigate("/new-listing", {
+      state: {
+        prefill: {
+          categoryId: listing.categoryId,
+          categoryName: listing.categoryName,
+          suggestedQuantity: listing.quantityRemaining,
+        },
+      },
+    });
+  }
+  return (
+    <div className="sb-detail-page-wrap">
+      <div className={`sb-page-bar ${isDone ? "sb-page-bar--detail-surplus" : isNeed ? "sb-page-bar--detail-need" : "sb-page-bar--detail-surplus"}`} />
+      <div className="sb-detail-page">
+      <Link to="/" className="d-inline-block mb-3 text-decoration-none sb-back-link">
+        &larr; Back to feed
+      </Link>
+
+      <div className="sb-detail-grid">
+        <div className={`sb-detail-card ${isDone ? "sb-detail-card--done" : isNeed ? "sb-detail-card--need" : "sb-detail-card--surplus"}`}>
+          <div className="sb-detail-header">
+            {isDone ? (
+              <span className="sb-detail-type sb-detail-type--done">Done</span>
+            ) : (
+              <span className={`sb-detail-type ${isNeed ? "sb-detail-type--need" : "sb-detail-type--surplus"}`}>
+                {isNeed ? "Need" : "Surplus"}
+              </span>
+            )}
+            {isNeed && !isDone && <UrgencyBadge urgency={listing.urgency} />}
+            <span className="ms-auto">
+              <StatusBadge status={listing.status} />
+            </span>
           </div>
 
-          <h1 className="h4 mb-3">
-            {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
-          </h1>
+          <div className="sb-detail-body">
+            <h1 className="sb-detail-qty">
+              {listing.quantity} unit{listing.quantity === 1 ? "" : "s"}
+            </h1>
+            <p className="sb-detail-meta">
+              {listing.categoryName} · Posted by {listing.ownerUsername}
+              {listing.ownerIsOrganization && (
+                <span className="sb-verified-badge" title="Verified organization">✓ Org</span>
+              )}
+            </p>
 
-          <p className="text-muted mb-3">
-             {listing.categoryName} · Posted by {listing.ownerUsername}
-          </p>
-
-          <dl className="row mb-3">
-            <dt className="col-5 col-sm-4 text-muted fw-normal">Quantity</dt>
-            <dd className="col-7 col-sm-8">{listing.quantity}</dd>
-
-            <dt className="col-5 col-sm-4 text-muted fw-normal">Remaining</dt>
-            <dd className="col-7 col-sm-8">{listing.quantityRemaining}</dd>
-
-            <dt className="col-5 col-sm-4 text-muted fw-normal">
-              {deadlineLabel}
-            </dt>
-            <dd className="col-7 col-sm-8">{formatDate(deadline) ?? "—"}</dd>
-
-            <dt className="col-5 col-sm-4 text-muted fw-normal">Status</dt>
-            <dd className="col-7 col-sm-8">
-              <StatusBadge status={listing.status} />
-            </dd>
-          </dl>
-
-          {canEdit && (
-            <div className="d-flex gap-2">
-          <button className="btn btn-outline-primary" onClick={() => navigate(`/listings/${listingId}/edit`)}>Edit</button>        
-        <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>Withdraw</button>
+            <div className="sb-progress-row">
+              <div className="sb-remaining-track sb-remaining-track--lg" aria-hidden="true">
+                <div
+                  className={`sb-remaining-fill ${isDone ? "sb-remaining-fill--done" : isNeed ? "sb-remaining-fill--need" : "sb-remaining-fill--surplus"}`}
+                  style={{ width: `${listing.quantity > 0 ? Math.round(((listing.quantity - listing.quantityRemaining) / listing.quantity) * 100) : 0}%` }}
+                />
+              </div>
+              <span className="sb-progress-label">
+                {listing.quantity > 0 ? Math.round(((listing.quantity - listing.quantityRemaining) / listing.quantity) * 100) : 0}% matched
+              </span>
             </div>
-          )}
+            <p className="sb-detail-remaining">{listing.quantityRemaining} {isNeed ? "still needed" : "still available"}</p>
+
+            <div className="sb-detail-facts">
+              <div className="sb-detail-fact">
+                <span className="sb-detail-fact-label">{deadlineLabel}</span>
+                <span className="sb-detail-fact-value">{formatDate(deadline) ?? "—"}</span>
+              </div>
+            </div>
+
+            {canOfferSurplus && (
+              <button className="btn btn-primary sb-btn-brand mt-4 w-100" onClick={handleOfferSurplus}>
+                Offer surplus for this
+              </button>
+            )}
+
+            {canEdit && (
+              <div className="d-flex gap-2 mt-4">
+                <button className="btn btn-outline-primary" onClick={() => navigate(`/listings/${listingId}/edit`)}>Edit</button>
+                <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>Withdraw</button>
+              </div>
+            )}
+          </div>
 
           {showConfirm && (
             <>
               <div className="modal d-block" tabIndex="-1" role="dialog">
-                <div className="modal-dialog">
+                <div className="modal-dialog ">
                   <div className="modal-content">
                     <div className="modal-header">
                       <h5 className="modal-title">Withdraw listing?</h5>
@@ -194,30 +229,34 @@ async function handleWithdraw() {
             </>
           )}
         </div>
-      </div>
 
-      <div className="sb-match-history-card">
-        <h2 className="sb-match-history-title">Match history</h2>
-        {historyLoading ? (
-          <p className="text-muted small">Loading…</p>
-        ) : matchHistory.length === 0 ? (
-          <p className="text-muted small sb-match-history-empty">
-            No matches yet — this listing hasn't crossed with anything on the other side.
-          </p>
-        ) : (
-          <ul className="sb-match-history-list">
-            {matchHistory.map((m) => (
-              <li key={m.matchLineId} className="sb-match-history-item">
-                <span className="sb-match-history-qty">{m.quantityMatched}</span>
-                <span className="sb-match-history-text">
-                  matched with <strong>{m.counterpartUsername}</strong>
-                  <span className="text-muted"> ({m.counterpartRole === "NEED" ? "need" : "surplus"})</span>
-                </span>
-                <span className="sb-match-history-time text-muted">{formatDateTime(m.matchedAt)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="sb-match-history-card">
+          <h2 className="sb-match-history-title">Match history</h2>
+          {historyLoading ? (
+            <p className="text-muted small">Loading…</p>
+          ) : matchHistory.length === 0 ? (
+            <p className="text-muted small sb-match-history-empty">
+              No matches yet — this listing hasn't crossed with anything on the other side.
+            </p>
+          ) : (
+            <ul className="sb-match-history-list">
+              {matchHistory.map((m) => (
+                <li key={m.matchLineId} className="sb-match-history-item">
+                  <span className="sb-match-history-qty">{m.quantityMatched}</span>
+                  <span className="sb-match-history-text">
+                    matched with <strong>{m.counterpartUsername}</strong>
+                    {m.counterpartIsOrganization && (
+                      <span className="sb-verified-badge" title="Verified organization">✓ Org</span>
+                    )}
+                    <span className="text-muted"> ({m.counterpartRole === "NEED" ? "need" : "surplus"})</span>
+                  </span>
+                  <span className="sb-match-history-time text-muted">{formatDateTime(m.matchedAt)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
       </div>
     </div>
   );

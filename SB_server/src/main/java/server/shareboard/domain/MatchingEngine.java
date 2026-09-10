@@ -124,6 +124,17 @@ public class MatchingEngine {
         }
     }
 
+    public void loadExisting(Listing listing) {
+        if (listing.getQuantityRemaining() <= 0) {
+            return;
+        }
+        if (listing.getType() == ListingType.NEED) {
+            needQueue.add(listing);
+        } else if (listing.getType() == ListingType.SURPLUS) {
+            surplusQueue.add(listing);
+        }
+    }
+
 
     public void withdraw(int listingId, ListingType type) {
         if (type == ListingType.NEED) {

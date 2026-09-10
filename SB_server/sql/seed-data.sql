@@ -1,17 +1,22 @@
 USE shareboard;
 
-INSERT INTO category (name) VALUES
-('Blankets'), ('Canned Food'), ('Baby Formula'), ('Coats'), ('School Supplies');
-
-INSERT INTO `user` (username, password_hash, is_organization) VALUES
-('riverside_shelter', 'hash1', TRUE),
-('corner_market', 'hash2', TRUE),
-('hope_nursery', 'hash3', TRUE),
-('downtown_pharmacy', 'hash4', TRUE),
-('j_rivera', 'hash5', FALSE),
-('m_chen', 'hash6', FALSE);
--- -- 
--- -- Needs
+INSERT INTO category (id, name) VALUES
+ (1, 'Blankets'),
+ (2, 'Canned Food'),
+ (3, 'Baby Formula'),
+ (4, 'Coats'),
+ (5, 'School Supplies'),
+ (6, 'Hygiene Kits');
+-- 
+-- INSERT INTO `user` (username, password_hash, is_organization) VALUES
+-- ('riverside_shelter', 'hash1', TRUE),
+-- ('corner_market', 'hash2', TRUE),
+-- ('hope_nursery', 'hash3', TRUE),
+-- ('downtown_pharmacy', 'hash4', TRUE),
+-- ('j_rivera', 'hash5', FALSE),
+-- ('m_chen', 'hash6', FALSE);
+-- -- -- 
+-- -- -- Needs
 -- INSERT INTO listing (user_id, category_id, type, quantity, quantity_remaining, urgency, needed_by, status) VALUES
 -- (1, 1, 'NEED', 50, 50, 'HIGH', '2026-08-29', 'OPEN'),                 -- shelter needs blankets soon
 -- (3, 3, 'NEED', 20, 20, 'MEDIUM', '2026-09-10', 'OPEN'),           -- nursery needs formula

@@ -1,19 +1,46 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import Logo from "../components/Logo";
 
 function NavBar() {
   const { user, logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-   function handleConfirmLogout() {
+  const isLandingStyle = location.pathname === "/about";
+
+  const [scrollY, setScrollY] = useState(() =>
+    typeof window !== "undefined" ? window.scrollY : 0
+  );
+
+  useEffect(() => {
+    if (!isLandingStyle) return;
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isLandingStyle]);
+
+  const scrolled = !isLandingStyle || scrollY > 40;
+
+  function handleConfirmLogout() {
     logout();
     setShowLogoutConfirm(false);
+    navigate("/about");
   }
 
-   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sb-navbar">
+  const initials = user?.username ? user.username.slice(0, 2).toUpperCase() : "";
+
+  return (
+    <nav
+      className={`navbar navbar-expand-lg shadow-sm sb-navbar ${
+        isLandingStyle && !scrolled
+          ? "navbar-light sb-navbar--transparent"
+          : "navbar-dark sb-navbar--solid"
+      }`}
+    >
       <div className="container">
         <NavLink className="navbar-brand fw-bold d-flex align-items-center gap-2" to="/">
           <Logo size={26} /> ShareBoard
@@ -44,17 +71,37 @@ function NavBar() {
                 to="/my-listings"> My Listings </NavLink>
             </li>
           </ul>
- 
+
           <div className="d-flex align-items-center gap-2">
             {user ? (
               <>
                 <NavLink to="/new-listing" className="btn btn-warning fw-semibold">
                   + Post Listing
                 </NavLink>
-                <span className="text-light small">Hi, {user.username}</span>
-                <button className="btn btn-outline-light btn-sm" onClick={() => setShowLogoutConfirm(true)}>
-                  Log Out
-                </button>
+                <div className="sb-user-menu">
+                  <button
+                    className="sb-avatar-btn"
+                    onClick={() => setShowUserMenu((v) => !v)}
+                    aria-haspopup="true"
+                    aria-expanded={showUserMenu}
+                  >
+                    <span className="sb-avatar">{initials}</span>
+                  </button>
+                  {showUserMenu && (
+                    <div className="sb-user-dropdown">
+                      <p className="sb-user-dropdown-name">{user.username}</p>
+                      <button
+                        className="sb-user-dropdown-item"
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          setShowLogoutConfirm(true);
+                        }}
+                      >
+                        Log Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <>
@@ -90,5 +137,5 @@ function NavBar() {
     </nav>
   );
 }
- 
+
 export default NavBar;

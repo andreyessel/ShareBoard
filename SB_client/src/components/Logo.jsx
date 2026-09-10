@@ -1,20 +1,20 @@
 function Logo({ size = 32 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" role="img" aria-label="ShareBoard logo">
-      <defs>
-        <clipPath id="sb-logo-right"><rect x="12" y="0" width="12" height="24" /></clipPath>
-      </defs>
+    <svg width={size} height={size} viewBox="0 0 200 160" role="img" aria-label="ShareBoard logo">
       <path
-        d="M12 21s-8-4.5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6.5-8 11-8 11z"
+        d="M10 50 C10 20 40 10 60 25 C75 36 78 55 70 70
+           C85 75 95 90 92 110 C88 135 60 150 30 150
+           C15 150 10 130 10 110 Z"
         fill="#0E7C61"
       />
       <path
-        d="M12 21s-8-4.5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6.5-8 11-8 11z"
+        d="M190 50 C190 20 160 10 140 25 C125 36 122 55 130 70
+           C115 75 105 90 108 110 C112 135 140 150 170 150
+           C185 150 190 130 190 110 Z"
         fill="#F2A93B"
-        clipPath="url(#sb-logo-right)"
       />
     </svg>
   );
 }
-
+ 
 export default Logo;

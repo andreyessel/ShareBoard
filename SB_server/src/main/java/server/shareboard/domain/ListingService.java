@@ -1,5 +1,6 @@
 package server.shareboard.domain;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import server.shareboard.data.ListingRepository;
@@ -28,10 +29,21 @@ public class ListingService {
         this.messagingTemplate = messagingTemplate;
     }
 
-   public Result<Listing> create(Listing listing) {
+    @PostConstruct
+    public void warmStartMatchingEngine() {
+        List<Listing> active = repository.findAll().stream()
+                .filter(l -> l.getStatus() == Status.OPEN || l.getStatus() == Status.PARTIALLY_MATCHED)
+                .filter(l -> l.getQuantityRemaining() > 0)
+                .toList();
+
+        for (Listing listing : active) {
+            matchingEngine.loadExisting(listing);
+        }
+    }
+
+    public Result<Listing> create(Listing listing) {
         Result<Listing> result = new Result<>();
 
-        //Validating a listing to be created
         if (listing == null) {
             result.addErrorMessage("Listing cannot be null",ResultType.INVALID);
             return result;
@@ -56,47 +68,44 @@ public class ListingService {
             return result;
         }
 
-         // Validating date based on Type
-           if (listing.getType() == ListingType.NEED) {
-               if (listing.getNeededBy() == null) {
-                   result.addErrorMessage("Needed By date is required.", ResultType.INVALID);
-               } else if (listing.getNeededBy().isBefore(LocalDate.now())) {
-                   result.addErrorMessage("Needed By date cannot be in the past.", ResultType.INVALID);
-               }
-               listing.setAvailableUntil(null);
-           } else if (listing.getType() == ListingType.SURPLUS) {
-               if (listing.getAvailableUntil() == null) {
-                   result.addErrorMessage("Available Until date is required.", ResultType.INVALID);
-               } else if (listing.getAvailableUntil().isBefore(LocalDate.now())) {
-                   result.addErrorMessage("Available Until date cannot be in the past.", ResultType.INVALID);
-               }
-               listing.setNeededBy(null);
-           }
+        if (listing.getType() == ListingType.NEED) {
+            if (listing.getNeededBy() == null) {
+                result.addErrorMessage("Needed By date is required.", ResultType.INVALID);
+            } else if (listing.getNeededBy().isBefore(LocalDate.now())) {
+                result.addErrorMessage("Needed By date cannot be in the past.", ResultType.INVALID);
+            }
+            listing.setAvailableUntil(null);
+        } else if (listing.getType() == ListingType.SURPLUS) {
+            if (listing.getAvailableUntil() == null) {
+                result.addErrorMessage("Available Until date is required.", ResultType.INVALID);
+            } else if (listing.getAvailableUntil().isBefore(LocalDate.now())) {
+                result.addErrorMessage("Available Until date cannot be in the past.", ResultType.INVALID);
+            }
+            listing.setNeededBy(null);
+        }
 
-
-
-       listing.setQuantityRemaining(listing.getQuantity());
-       listing.setCreatedAt(LocalDateTime.now());
-       Listing created = repository.create(listing);
+        listing.setQuantityRemaining(listing.getQuantity());
+        listing.setCreatedAt(LocalDateTime.now());
+        listing.setStatus(Status.OPEN);
+        Listing created = repository.create(listing);
         if (created == null){
             result.addErrorMessage("user can not be null", ResultType.INVALID);
             return result;
         }
 
-     MatchResult matchResult = matchingEngine.submit(created);
+        MatchResult matchResult = matchingEngine.submit(created);
 
-     for (MatchLine match : matchResult.getMatches()){
-         matchLineRepository.create(match);
-     }
-       for (Listing updated : matchResult.getUpdatedListings()) {
-           repository.update(updated);
-       }
+        for (MatchLine match : matchResult.getMatches()){
+            matchLineRepository.create(match);
+        }
+        for (Listing updated : matchResult.getUpdatedListings()) {
+            repository.update(updated);
+        }
 
-       //broadcasting the different if the list isn't empty
-       List<Listing> toBroadcast = matchResult.getUpdatedListings().isEmpty()
-               ? List.of(created)
-               : matchResult.getUpdatedListings();
-       messagingTemplate.convertAndSend("/topic/listings/" + listing.getCategoryId(), toBroadcast);
+        List<Listing> toBroadcast = matchResult.getUpdatedListings().isEmpty()
+                ? List.of(created)
+                : matchResult.getUpdatedListings();
+        messagingTemplate.convertAndSend("/topic/listings/" + listing.getCategoryId(), toBroadcast);
 
         result.setPayload(created);
         return result;
@@ -123,12 +132,26 @@ public class ListingService {
 
     public Result<List<Listing>> findByUserId(int userId) {
         Result<List<Listing>> result = new Result<>();
-      List<Listing> found = repository.findByUserId(userId);
+        List<Listing> found = repository.findByUserId(userId);
         result.setPayload(found);
         return result;
     }
 
-    // ListingService.java — add this method (needs `import server.shareboard.models.Status;`)
+    public Result<List<MatchHistoryEntry>> getMatchHistory(int listingId) {
+        Result<List<MatchHistoryEntry>> result = new Result<>();
+
+        if (repository.findById(listingId) == null) {
+            result.addErrorMessage("Listing not found", ResultType.NOT_FOUND);
+            return result;
+        }
+
+        result.setPayload(matchLineRepository.findHistoryForListing(listingId));
+        return result;
+    }
+
+    public List<RecentMatchEntry> getRecentMatches(int limit) {
+        return matchLineRepository.findRecent(limit);
+    }
 
     public Result<Listing> update(Listing listing, int requesterId) {
         Result<Listing> result = new Result<>();
@@ -198,7 +221,6 @@ public class ListingService {
             return result;
         }
 
-        //broadcasting the difference
         messagingTemplate.convertAndSend("/topic/listings/" + existing.getCategoryId(), List.of(existing));
 
         result.setPayload(existing);
@@ -239,6 +261,4 @@ public class ListingService {
         result.setPayload(existing);
         return result;
     }
-
-
 }

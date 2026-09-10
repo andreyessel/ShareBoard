@@ -13,20 +13,21 @@ function formatDate(dateString) {
 
 export default function ListingCard({ listing, justMatched}) {
   const isNeed = listing.type === "NEED";
+  const isDone = listing.status === "MATCHED";
   const deadline = isNeed ? listing.neededBy : listing.availableUntil;
   const deadlineLabel = isNeed ? "by" : "thru";
-  const pctRemaining = listing.quantity > 0
-    ? Math.round((listing.quantityRemaining / listing.quantity) * 100)
+  const pctMatched = listing.quantity > 0
+    ? Math.round(((listing.quantity - listing.quantityRemaining) / listing.quantity) * 100)
     : 0;
 
   return (
     <Link
       to={`/listings/${listing.listingId}`}
-      className="text-decoration-none text-reset"
+      className="text-decoration-none text-reset sb-card-link"
     >
       <div
         className={`sb-listing-card ${
-          isNeed ? "sb-listing-card--need" : "sb-listing-card--surplus"
+          isDone ? "sb-listing-card--done" : isNeed ? "sb-listing-card--need" : "sb-listing-card--surplus"
         } ${justMatched ? "match-flash" : ""}`}
       >
         <div className="sb-listing-card-body">
@@ -42,28 +43,37 @@ export default function ListingCard({ listing, justMatched}) {
                 )}
               </p>
             </div>
-            {isNeed ? <UrgencyBadge urgency={listing.urgency} /> : <StatusBadge status={listing.status} />}
+            {isDone ? (
+              <span className="sb-done-badge">Done</span>
+            ) : isNeed ? (
+              <UrgencyBadge urgency={listing.urgency} />
+            ) : (
+              <StatusBadge status={listing.status} />
+            )}
           </div>
 
           <p className="sb-listing-category">{listing.categoryName}</p>
 
-          <div className="sb-remaining-track" aria-hidden="true">
-            <div
-              className={`sb-remaining-fill ${isNeed ? "sb-remaining-fill--need" : "sb-remaining-fill--surplus"}`}
-              style={{ width: `${pctRemaining}%` }}
-            />
+          <div className="sb-progress-row">
+            <div className="sb-remaining-track" aria-hidden="true">
+              <div
+                className={`sb-remaining-fill ${isDone ? "sb-remaining-fill--done" : isNeed ? "sb-remaining-fill--need" : "sb-remaining-fill--surplus"}`}
+                style={{ width: `${pctMatched}%` }}
+              />
+            </div>
+            <span className="sb-progress-label">{pctMatched}% matched</span>
           </div>
 
           <div className="sb-listing-meta">
             <span className="sb-listing-meta-item">
-              <PackageIcon /> {listing.quantityRemaining} remaining
+              <PackageIcon /> {listing.quantityRemaining} {isNeed ? "needed" : "available"}
             </span>
             <span className="sb-listing-meta-item">
               <ClockIcon /> {deadlineLabel} {formatDate(deadline) ?? "—"}
             </span>
           </div>
 
-          {isNeed && (
+          {isNeed && !isDone && (
             <div className="sb-listing-footer">
               <StatusBadge status={listing.status} />
             </div>

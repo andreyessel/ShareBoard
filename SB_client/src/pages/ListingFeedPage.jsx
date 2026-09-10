@@ -2,11 +2,23 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Client } from "@stomp/stompjs";
 import ListingCard from "../components/feed/ListingCard";
 
+function timeAgo(dateString) {
+  const diffMs = Date.now() - new Date(dateString).getTime();
+  const mins = Math.round(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
+
 function ListingFeedPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [urgencyFilter, setUrgencyFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
   const [live, setLive] = useState(false);
   const stompClientRef = useRef(null);
@@ -14,10 +26,10 @@ function ListingFeedPage() {
   const [justMatched, setJustMatched] = useState(new Set());
   const [bumpedKeys, setBumpedKeys] = useState(new Set());
   const prevCounts = useRef({});
-  const [activity, setActivity] = useState([
-    { id: "start", text: "Watching for needs and surplus that cross." },
-  ]);
+  const [activity, setActivity] = useState([]);
   const activityRef = useRef(null);
+  const [toast, setToast] = useState(null);
+  const toastTimeout = useRef(null);
 
   // Function to subscribe to STOMP topics per category
   const subscribeToCategory = useCallback((client, categoryId) => {
@@ -46,15 +58,20 @@ function ListingFeedPage() {
       });
     }, 1500);
 
-    // A genuine match broadcasts both sides together (the need and the surplus
-    // that just crossed). A plain edit or withdrawal only ever broadcasts one
-    // listing. Use that to log real matches to the activity feed, using real
-    // data from the broadcast — no invented numbers.
     const need = updated.find((l) => l.type === "NEED");
     const surplus = updated.find((l) => l.type === "SURPLUS");
     if (need && surplus) {
       const line = `${need.categoryName} matched — ${surplus.ownerUsername} \u2192 ${need.ownerUsername}`;
       setActivity((prev) => [...prev, { id: `${need.listingId}-${surplus.listingId}-${Date.now()}`, text: line }]);
+
+      clearTimeout(toastTimeout.current);
+      setToast({
+        id: Date.now(),
+        category: need.categoryName,
+        from: surplus.ownerUsername,
+        to: need.ownerUsername,
+      });
+      toastTimeout.current = setTimeout(() => setToast(null), 4500);
     }
   });
 }, []);
@@ -86,6 +103,21 @@ function ListingFeedPage() {
     fetchListings();
   }, []);
 
+  useEffect(() => {
+    const fetchRecentMatches = async () => {
+      const response = await fetch("http://localhost:8080/api/matches/recent?limit=8");
+      if (!response.ok) return;
+      const recent = await response.json();
+
+      const historical = [...recent].reverse().map((m) => ({
+        id: `history-${m.matchLineId}`,
+        text: `${m.categoryName} matched — ${m.surplusUsername} \u2192 ${m.needUsername} (${timeAgo(m.matchedAt)})`,
+      }));
+      setActivity((prev) => [...historical, ...prev]);
+    };
+    fetchRecentMatches();
+  }, []);
+
   // Initialize WebSockets / STOMP client
   useEffect(() => {
     const client = new Client({
@@ -112,8 +144,6 @@ function ListingFeedPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Dynamic subscription listener: whenever listings update (or when a new listing is fetched),
-  // ensure we subscribe to any new category topics instantly
   useEffect(() => {
     const client = stompClientRef.current;
     if (!client || !client.connected) return;
@@ -138,8 +168,6 @@ function ListingFeedPage() {
     { key: "withdrawn", label: "Withdrawn", count: withdrawn, cls: "sb-pill-withdrawn", test: (l) => l.status === "WITHDRAWN" },
   ];
 
-  // Give the stats bar "life": briefly highlight any pill whose count just changed,
-  // so a live match happening elsewhere is visible even if that pill isn't the active filter.
   useEffect(() => {
     const changed = new Set();
     filters.forEach((f) => {
@@ -161,25 +189,36 @@ function ListingFeedPage() {
     setActiveFilter((prev) => (prev === key ? null : key));
   }
 
-   const activeDef = filters.find((f) => f.key === activeFilter);
+  const activeDef = filters.find((f) => f.key === activeFilter);
   const byStatus = activeDef ? listings.filter(activeDef.test) : listings.filter((l) => l.status !== "WITHDRAWN");
-  const visibleListings = categoryFilter
-    ? byStatus.filter((l) => String(l.categoryId) === categoryFilter)
-    : byStatus;
+  const byCategory = categoryFilter ? byStatus.filter((l) => String(l.categoryId) === categoryFilter) : byStatus;
+  const byUrgency = urgencyFilter ? byCategory.filter((l) => l.urgency === urgencyFilter) : byCategory;
+  const term = searchTerm.trim().toLowerCase();
+  const visibleListings = term
+    ? byUrgency.filter(
+        (l) =>
+          l.categoryName.toLowerCase().includes(term) ||
+          l.ownerUsername.toLowerCase().includes(term)
+      )
+    : byUrgency;
 
- return (
+  const anyFilterActive = activeDef || categoryFilter || urgencyFilter || term;
+
+  return (
     <div className="sb-feed-page">
+      <div className="sb-page-bar sb-page-bar--feed" />
       <div className="sb-feed-inner">
-             <div className="sb-feed-header">
+        <div className="sb-feed-header">
           <div>
-            <h1 className="sb-feed-title">Listings</h1>
-            <p className="sb-feed-subtitle">Needs and surplus, matched the instant they cross.</p>
+            <h1 className="sb-feed-title">The Board</h1>
+            <p className="sb-feed-subtitle">Every open need — and what's on its way to filling it.</p>
           </div>
           <span className={`sb-live-pill ${live ? "sb-live-pill--on" : ""}`}>
             <span className={`sb-live-dot ${live ? "sb-live-dot--on" : ""}`} aria-hidden="true" />
             {live ? "Matching engine live" : "Connecting…"}
           </span>
         </div>
+
         <div className="sb-feed-layout">
           <div>
             <div className="sb-filter-row">
@@ -201,7 +240,17 @@ function ListingFeedPage() {
                   </button>
                 ))}
               </div>
+            </div>
 
+            <div className="sb-search-row">
+              <input
+                type="search"
+                className="form-control sb-search-input"
+                placeholder="Search by category or org name…"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Search listings"
+              />
               <select
                 className="form-select sb-category-select"
                 value={categoryFilter}
@@ -215,13 +264,24 @@ function ListingFeedPage() {
                   </option>
                 ))}
               </select>
+              <select
+                className="form-select sb-category-select"
+                value={urgencyFilter}
+                onChange={(e) => setUrgencyFilter(e.target.value)}
+                aria-label="Filter by urgency"
+              >
+                <option value="">All urgencies</option>
+                <option value="HIGH">Urgent</option>
+                <option value="MEDIUM">Moderate</option>
+                <option value="LOW">Low urgency</option>
+              </select>
             </div>
 
             {loading ? (
               <p className="text-muted">Loading listings...</p>
             ) : visibleListings.length === 0 ? (
               <p className="text-muted">
-                {activeDef || categoryFilter ? "No listings match these filters right now." : "No listings yet. Be the first to post one."}
+                {anyFilterActive ? "No listings match these filters right now." : "No listings yet. Be the first to post one."}
               </p>
             ) : (
               <div className="sb-feed-grid">
@@ -247,24 +307,47 @@ function ListingFeedPage() {
               </div>
               <div className="sb-glance-row">
                 <span>Matched</span>
-                <strong>{matched + partiallyMatched}</strong>
+                <strong>{matched}</strong>
+              </div>
+              <div className="sb-glance-row">
+                <span>Partially matched</span>
+                <strong>{partiallyMatched}</strong>
               </div>
             </div>
 
             <div className="sb-activity-card">
               <p className="sb-glance-title">Engine activity</p>
               <div className="sb-activity-list" ref={activityRef}>
-                {activity.map((a) => (
-                  <div key={a.id} className="sb-activity-item">
+                {activity.length === 0 ? (
+                  <div className="sb-activity-item">
                     <span className="sb-activity-dot" />
-                    {a.text}
+                    Watching for needs and surplus that cross.
                   </div>
-                ))}
+                ) : (
+                  activity.map((a) => (
+                    <div key={a.id} className="sb-activity-item">
+                      <span className="sb-activity-dot" />
+                      {a.text}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </aside>
         </div>
       </div>
+
+      {toast && (
+        <div className="sb-match-toast" key={toast.id}>
+          <span className="sb-match-toast-icon">✓</span>
+          <div>
+            <p className="sb-match-toast-title">Match found!</p>
+            <p className="sb-match-toast-body">
+              {toast.category}  {toast.from}  {toast.to}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

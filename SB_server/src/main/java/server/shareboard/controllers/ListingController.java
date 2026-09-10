@@ -47,6 +47,15 @@ public class ListingController {
         return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
     }
 
+    @GetMapping("/{listingId}/matches")
+    public ResponseEntity<?> getMatchHistory(@PathVariable("listingId") int listingId) {
+        Result<List<server.shareboard.domain.MatchHistoryEntry>> result = service.getMatchHistory(listingId);
+        if (!result.isSuccess()) {
+            return ErrorResponse.build(result);
+        }
+        return new ResponseEntity<>(result.getPayload(), HttpStatus.OK);
+    }
+
     @GetMapping("/myListings")
     public ResponseEntity<?> findByUserId(@RequestParam("userId") int userId) {
         Result<List<Listing>> result = service.findByUserId(userId);

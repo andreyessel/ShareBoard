@@ -1,0 +1,450 @@
+### ============================================================================
+### ShareBoard seed data — VS Code REST Client extension format
+### (humao.rest-client — the one with the "Send Request" link above each block)
+###
+### Run top to bottom, ONE AT A TIME, clicking "Send Request" above each block
+### in order. Each request that other requests depend on is named with
+### "# @name" — later requests pull values from it via {{name.response.body.$.field}}.
+### Running out of order, or via a "run all" shortcut, will NOT work correctly —
+### this extension resolves those references at click-time, not in a batch.
+###
+### You still need categories seeded first — there's no POST endpoint for
+### those. Run this tiny SQL snippet once before this file:
+###
+###   USE shareboard;
+###   INSERT INTO category (id, name) VALUES
+###     (1, 'Blankets'), (2, 'Canned Food'), (3, 'Baby Formula'),
+###     (4, 'Coats'), (5, 'School Supplies'), (6, 'Hygiene Kits');
+###
+### ============================================================================
+
+@baseUrl = http://localhost:8080/api
+
+### ----------------------------------------------------------------------------
+### Register accounts (orgs get the verified badge; a couple of individuals too)
+### ----------------------------------------------------------------------------
+
+# @name registerShelter
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Riverside Shelter",
+  "passwordHash": "Password123",
+  "organization": true
+}
+
+###
+
+# @name registerMarket
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Corner Market",
+  "passwordHash": "Password123",
+  "organization": true
+}
+
+###
+
+# @name registerNursery
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Hope Nursery",
+  "passwordHash": "Password123",
+  "organization": true
+}
+
+###
+
+# @name registerPharmacy
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Downtown Pharmacy",
+  "passwordHash": "Password123",
+  "organization": true
+}
+
+###
+
+# @name registerFoodbank
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Eastside Foodbank",
+  "passwordHash": "Password123",
+  "organization": true
+}
+
+###
+
+# @name registerPantry
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Community Pantry",
+  "passwordHash": "Password123",
+  "organization": true
+}
+
+###
+
+# @name registerRivera
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "j rivera",
+  "passwordHash": "Password123",
+  "organization": false
+}
+
+###
+
+# @name registerChen
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "m chen",
+  "passwordHash": "Password123",
+  "organization": false
+}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### Pair 1: Blankets — will auto-match FULLY the instant the surplus posts
+### (posted anonymously, so it should show as "Anonymous Donor" everywhere)
+### ----------------------------------------------------------------------------
+
+### NEED: Blankets, 50 units, riverside shelter
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerShelter.response.body.$.userId}},
+  "categoryId": 1,
+  "type": "NEED",
+  "quantity": 50,
+  "quantityRemaining": 50,
+  "urgency": "HIGH",
+  "neededBy": "2026-10-20",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### SURPLUS: Blankets, 50 units, corner market, anonymous — matches the need above
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerMarket.response.body.$.userId}},
+  "categoryId": 1,
+  "type": "SURPLUS",
+  "quantity": 50,
+  "quantityRemaining": 50,
+  "availableUntil": "2026-11-01",
+  "status": "OPEN",
+  "anonymous": true
+}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### Pair 2: Baby Formula — surplus only partially covers the need (20 of 30),
+### leaving the need PARTIALLY MATCHED with 10 still open
+### ----------------------------------------------------------------------------
+
+### NEED: Baby Formula, 30 units, hope nursery
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerNursery.response.body.$.userId}},
+  "categoryId": 3,
+  "type": "NEED",
+  "quantity": 30,
+  "quantityRemaining": 30,
+  "urgency": "MEDIUM",
+  "neededBy": "2026-10-25",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### SURPLUS: Baby Formula, 20 units, downtown pharmacy — partially fills the need above
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerPharmacy.response.body.$.userId}},
+  "categoryId": 3,
+  "type": "SURPLUS",
+  "quantity": 20,
+  "quantityRemaining": 20,
+  "availableUntil": "2026-10-30",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### Pair 3: Baby Formula — deliberately incompatible dates, so the deadline-
+### crossing check correctly REJECTS this match. Good one to point at live.
+### ----------------------------------------------------------------------------
+
+### NEED: Baby Formula, 15 units, needed by Nov 10 — far out deadline
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerNursery.response.body.$.userId}},
+  "categoryId": 3,
+  "type": "NEED",
+  "quantity": 15,
+  "quantityRemaining": 15,
+  "urgency": "LOW",
+  "neededBy": "2026-11-10",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### SURPLUS: Baby Formula, 10 units, expires Oct 5 — BEFORE the need's deadline, won't match
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerPharmacy.response.body.$.userId}},
+  "categoryId": 3,
+  "type": "SURPLUS",
+  "quantity": 10,
+  "quantityRemaining": 10,
+  "availableUntil": "2026-10-05",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### Pair 4: Coats — need fully covered, surplus has extra left over
+### ----------------------------------------------------------------------------
+
+### NEED: Coats, 30 units, riverside_shelter
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerShelter.response.body.$.userId}},
+  "categoryId": 4,
+  "type": "NEED",
+  "quantity": 30,
+  "quantityRemaining": 30,
+  "urgency": "LOW",
+  "neededBy": "2026-11-15",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### SURPLUS: Coats, 40 units, corner_market — covers the need above with 10 left over
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerMarket.response.body.$.userId}},
+  "categoryId": 4,
+  "type": "SURPLUS",
+  "quantity": 40,
+  "quantityRemaining": 40,
+  "availableUntil": "2026-12-01",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### Withdrawn example — post it, then withdraw it
+### ----------------------------------------------------------------------------
+
+# @name listingToWithdraw
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerShelter.response.body.$.userId}},
+  "categoryId": 5,
+  "type": "NEED",
+  "quantity": 25,
+  "quantityRemaining": 25,
+  "urgency": "LOW",
+  "neededBy": "2026-10-15",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### Withdraw it (requesterId must match the owner — riverside_shelter)
+DELETE {{baseUrl}}/listings/{{listingToWithdraw.response.body.$.listingId}}?requesterId={{registerShelter.response.body.$.userId}}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### More open listings — variety for search/category/urgency filter testing
+### ----------------------------------------------------------------------------
+
+### SURPLUS: Hygiene Kits, 25 units, community_pantry, anonymous — left open
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerPantry.response.body.$.userId}},
+  "categoryId": 6,
+  "type": "SURPLUS",
+  "quantity": 25,
+  "quantityRemaining": 25,
+  "availableUntil": "2026-12-05",
+  "status": "OPEN",
+  "anonymous": true
+}
+
+###
+
+### NEED: Hygiene Kits, 15 units, hope_nursery, HIGH — left open
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerNursery.response.body.$.userId}},
+  "categoryId": 6,
+  "type": "NEED",
+  "quantity": 15,
+  "quantityRemaining": 15,
+  "urgency": "HIGH",
+  "neededBy": "2026-10-10",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### NEED: Coats, 10 units, riverside_shelter, HIGH — left open
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerShelter.response.body.$.userId}},
+  "categoryId": 4,
+  "type": "NEED",
+  "quantity": 10,
+  "quantityRemaining": 10,
+  "urgency": "HIGH",
+  "neededBy": "2026-10-08",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### SURPLUS: Blankets, 15 units, corner_market — left open
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerMarket.response.body.$.userId}},
+  "categoryId": 1,
+  "type": "SURPLUS",
+  "quantity": 15,
+  "quantityRemaining": 15,
+  "availableUntil": "2026-11-20",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### NEED: Canned Food, 40 units, eastside_foodbank, HIGH — left open
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerFoodbank.response.body.$.userId}},
+  "categoryId": 2,
+  "type": "NEED",
+  "quantity": 40,
+  "quantityRemaining": 40,
+  "urgency": "HIGH",
+  "neededBy": "2026-10-12",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+
+### ----------------------------------------------------------------------------
+### DEMO PAIR — deliberately ONE SIDE ONLY. Send the NEED now (part of seeding).
+### During your actual live demo, send the SURPLUS request below in front of
+### the audience to trigger a real, fresh, on-camera match.
+### ----------------------------------------------------------------------------
+
+### NEED: Canned Food, 200 units, eastside_foodbank — send this now
+POST {{baseUrl}}/listings
+Content-Type: application/json
+
+{
+  "userId": {{registerFoodbank.response.body.$.userId}},
+  "categoryId": 2,
+  "type": "NEED",
+  "quantity": 200,
+  "quantityRemaining": 200,
+  "urgency": "MEDIUM",
+  "neededBy": "2026-11-05",
+  "status": "OPEN",
+  "anonymous": false
+}
+
+###
+
+### === DO NOT SEND THIS DURING SEEDING === send it LIVE during your demo instead
+# POST {{baseUrl}}/listings
+# Content-Type: application/json
+#
+# {
+#   "userId": {{registerPantry.response.body.$.userId}},
+#   "categoryId": 2,
+#   "type": "SURPLUS",
+#   "quantity": 250,
+#   "quantityRemaining": 250,
+#   "availableUntil": "2026-11-20",
+#   "status": "OPEN",
+#   "anonymous": false
+# }
+HTTPEOF
+wc -l /mnt/user-data/outputs/seed-data.http
+Output
+
+445 /mnt/user-data/outputs/seed-data.http

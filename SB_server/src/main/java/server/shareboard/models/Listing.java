@@ -15,8 +15,10 @@ public class Listing {
     private LocalDate availableUntil;
     private Status status;
     private LocalDateTime createdAt;
-
+    //New feature: anonymous, for a giver who does not want to be known
+    private boolean anonymous;
     private String ownerUsername;
+    private boolean ownerIsOrganization;
     private String categoryName;
 
     public Listing() {
@@ -123,12 +125,28 @@ public class Listing {
         this.createdAt = createdAt;
     }
 
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+
     public String getOwnerUsername() {
         return ownerUsername;
     }
 
     public void setOwnerUsername(String ownerUsername) {
         this.ownerUsername = ownerUsername;
+    }
+
+    public boolean isOwnerIsOrganization() {
+        return ownerIsOrganization;
+    }
+
+    public void setOwnerIsOrganization(boolean ownerIsOrganization) {
+        this.ownerIsOrganization = ownerIsOrganization;
     }
 
     public String getCategoryName() {

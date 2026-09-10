@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Fragment } from "react";
 import { useAuth } from "../context/useAuth";
 
@@ -10,11 +10,23 @@ const INITIAL_LISTING = {
   urgency: "MEDIUM",
   neededBy: "",
   availableUntil: "",
+  anonymous: false,
 };
 
 function NewListingPage() {
    const { user } = useAuth();
-  const [listing, setListing] = useState(INITIAL_LISTING);
+  const location = useLocation();
+  const prefill = location.state?.prefill ?? null;
+  const [listing, setListing] = useState(() =>
+    prefill
+      ? {
+          ...INITIAL_LISTING,
+          type: "SURPLUS",
+          categoryId: String(prefill.categoryId),
+          quantity: prefill.suggestedQuantity != null ? String(prefill.suggestedQuantity) : "",
+        }
+      : INITIAL_LISTING
+  );
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -32,7 +44,8 @@ function NewListingPage() {
 
   function handleChange(event) {
     const updatedListing = { ...listing };
-    updatedListing[event.target.name] = event.target.value;
+    updatedListing[event.target.name] =
+      event.target.type === "checkbox" ? event.target.checked : event.target.value;
     setListing(updatedListing);
   }
 
@@ -53,6 +66,7 @@ function NewListingPage() {
       neededBy: isNeed ? listing.neededBy : null,
       availableUntil: isNeed ? null : listing.availableUntil,
       status: "OPEN",
+      anonymous: isNeed ? false : listing.anonymous,
     };
 
 
@@ -75,8 +89,18 @@ function NewListingPage() {
 
   return (
     <div className="py-4" style={{ maxWidth: "480px", margin: "0 auto" }}>
-      <h1 className="h3 mb-4">New Listing</h1>
+      <div className="sb-form-card">
+      <h1 className="sb-form-title">{prefill ? "Offer Surplus" : "New Listing"}</h1>
 
+      {prefill && (
+        <div className="sb-prefill-banner">
+          Offering surplus for <strong>{prefill.categoryName}</strong>
+          {prefill.suggestedQuantity != null && <> · they still need {prefill.suggestedQuantity} unit{prefill.suggestedQuantity === 1 ? "" : "s"}</>}
+        </div>
+      )}
+      
+
+      
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label d-block">Type</label>
@@ -89,6 +113,7 @@ function NewListingPage() {
               value="NEED"
               checked={listing.type === "NEED"}
               onChange={handleChange}
+              disabled={!!prefill}
             />
             <label className="btn btn-outline-danger" htmlFor="typeNeed">
               Need
@@ -102,6 +127,7 @@ function NewListingPage() {
               value="SURPLUS"
               checked={listing.type === "SURPLUS"}
               onChange={handleChange}
+              disabled={!!prefill}
             />
             <label className="btn btn-outline-success" htmlFor="typeSurplus">
               Surplus
@@ -119,6 +145,7 @@ function NewListingPage() {
             name="categoryId"
             value={listing.categoryId}
             onChange={handleChange}
+            disabled={!!prefill}
             required
           >
             <option value="" disabled>
@@ -187,6 +214,22 @@ function NewListingPage() {
           />
         </div>
 
+        {!isNeed && (
+          <div className="form-check mb-4 sb-anon-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="anonymous"
+              name="anonymous"
+              checked={listing.anonymous}
+              onChange={handleChange}
+            />
+            <label className="form-check-label" htmlFor="anonymous">
+              Give anonymously — your username won't be shown to anyone
+            </label>
+          </div>
+        )}
+
         {errors.length > 0 && (
           <div className="alert alert-danger">
             <ul className="mb-0">
@@ -204,7 +247,9 @@ function NewListingPage() {
         >
           {submitting ? "Posting…" : "Post Listing"}
         </button>
+        
       </form>
+      </div>
     </div>
   );
 }

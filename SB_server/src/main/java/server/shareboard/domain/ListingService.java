@@ -37,7 +37,7 @@ public class ListingService {
                 .toList();
 
         for (Listing listing : active) {
-//            matchingEngine.loadExisting(listing);
+            matchingEngine.loadExisting(listing);
         }
     }
 
@@ -137,17 +137,17 @@ public class ListingService {
         return result;
     }
 
-//    public Result<List<MatchHistoryEntry>> getMatchHistory(int listingId) {
-//        Result<List<MatchHistoryEntry>> result = new Result<>();
-//
-//        if (repository.findById(listingId) == null) {
-//            result.addErrorMessage("Listing not found", ResultType.NOT_FOUND);
-//            return result;
-//        }
-//
-//        result.setPayload(matchLineRepository.findHistoryForListing(listingId));
-//        return result;
-//    }
+    public Result<List<MatchHistoryEntry>> getMatchHistory(int listingId) {
+        Result<List<MatchHistoryEntry>> result = new Result<>();
+
+        if (repository.findById(listingId) == null) {
+            result.addErrorMessage("Listing not found", ResultType.NOT_FOUND);
+            return result;
+        }
+
+        result.setPayload(matchLineRepository.findHistoryForListing(listingId));
+        return result;
+    }
 
     public List<RecentMatchEntry> getRecentMatches(int limit) {
         return matchLineRepository.findRecent(limit);

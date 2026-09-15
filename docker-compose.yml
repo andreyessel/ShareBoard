@@ -12,6 +12,8 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./SB_server/sql:/docker-entrypoint-initdb.d
+
 
     # Check that MySQL is actually ready to accept connections.
     # This prevents the backend from trying to connect too early.

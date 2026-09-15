@@ -1,3 +1,4 @@
+import { API_URL, WS_URL } from "../config";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Client } from "@stomp/stompjs";
 import ListingCard from "../components/feed/ListingCard";
@@ -79,7 +80,7 @@ function ListingFeedPage() {
   // Initial load from REST API
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await fetch("http://localhost:8080/api/categories");
+const response = await fetch(`${API_URL}/api/categories`);
       if (response.ok) {
         setCategories(await response.json());
       }
@@ -90,7 +91,7 @@ function ListingFeedPage() {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/listings");
+const response = await fetch(`${API_URL}/api/listings`);
         if (response.ok) {
           setListings(await response.json());
         } else {
@@ -105,7 +106,7 @@ function ListingFeedPage() {
 
   useEffect(() => {
     const fetchRecentMatches = async () => {
-      const response = await fetch("http://localhost:8080/api/matches/recent?limit=8");
+const response = await fetch(`${API_URL}/api/matches/recent?limit=8`);
       if (!response.ok) return;
       const recent = await response.json();
 
@@ -121,7 +122,7 @@ function ListingFeedPage() {
   // Initialize WebSockets / STOMP client
   useEffect(() => {
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws",
+brokerURL: WS_URL,
       reconnectDelay: 5000,
     });
 

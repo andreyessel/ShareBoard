@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ListingCard from "../components/feed/ListingCard";
@@ -11,8 +12,8 @@ function MyListingsPage() {
   useEffect(() => {
     const fetchMyListings = async () => {
       setLoading(true);
-      const response = await fetch( `http://localhost:8080/api/listings/myListings?userId=${user.userId}`
-      );
+   const response = await fetch(
+     `${API_URL}/api/listings/myListings?userId=${user.userId}`      );
       if (response.ok) {
         setListings(await response.json());
       } else {

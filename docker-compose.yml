@@ -41,12 +41,16 @@ services:
       - "8080:8080"
 
   frontend:
-    build: ./SB_client
-    restart: always
-    depends_on:
-      - backend
-    ports:
-      - "3000:80"
+  build:
+    context: ./SB_client
+    args:
+      VITE_API_URL: http://localhost:8080
+      VITE_WS_URL: ws://localhost:8080/ws
+  restart: always
+  depends_on:
+    - backend
+  ports:
+    - "3000:80"
 
 volumes:
   db_data:

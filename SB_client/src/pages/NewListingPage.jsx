@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Fragment } from "react";
@@ -34,8 +35,7 @@ function NewListingPage() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await fetch("http://localhost:8080/api/categories");
-      if (response.ok) {
+const response = await fetch(`${API_URL}/api/categories`);      if (response.ok) {
         setCategories(await response.json());
       }
     };
@@ -70,8 +70,7 @@ function NewListingPage() {
     };
 
 
-    const response = await fetch("http://localhost:8080/api/listings", {
-      method: "POST",
+const response = await fetch(`${API_URL}/api/listings`, {      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });

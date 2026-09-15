@@ -1,3 +1,4 @@
+import { API_URL} from "../config";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
@@ -16,9 +17,8 @@ function EditListingPage() {
     const fetchData = async () => {
       setLoading(true);
       const [listingRes, categoriesRes] = await Promise.all([
-        fetch(`http://localhost:8080/api/listings/${listingId}`),
-        fetch("http://localhost:8080/api/categories"),
-      ]);
+fetch(`${API_URL}/api/listings/${listingId}`),
+fetch(`${API_URL}/api/categories`),      ]);
       if (listingRes.ok) {
         setListing(await listingRes.json());
       } else {
@@ -52,8 +52,7 @@ function EditListingPage() {
     };
 
     const response = await fetch(
-      `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`,
-      {
+`${API_URL}/api/listings/${listingId}?requesterId=${user.userId}`,      {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

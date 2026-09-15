@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: shareboard
+      MYSQL_USER: shareboard_user
+      MYSQL_PASSWORD: shareboard_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: ./SB_server
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:mysql://db:3306/shareboard
+      DB_USERNAME: shareboard_user
+      DB_PASSWORD: shareboard_pass
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./SB_client
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  db_data:

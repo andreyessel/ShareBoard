@@ -1,6 +1,5 @@
-version: "3.9"
-
 services:
+
   db:
     image: mysql:8.0
     restart: always
@@ -14,11 +13,24 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+    # Check that MySQL is actually ready to accept connections.
+    # This prevents the backend from trying to connect too early.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build: ./SB_server
     restart: always
+
+    # Wait for MySQL to become healthy before starting the backend.
+    # depends_on by itself only controls startup order, not readiness.
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
     environment:
       DB_URL: jdbc:mysql://db:3306/shareboard
       DB_USERNAME: shareboard_user

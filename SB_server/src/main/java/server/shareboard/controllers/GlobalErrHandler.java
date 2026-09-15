@@ -31,10 +31,16 @@ public class GlobalErrHandler {
     public ResponseEntity<Object> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException error) {
         return new ResponseEntity<>(error.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
+// 500 - catch-all safety net for anything else unexpected
+@ExceptionHandler(Exception.class)
+public ResponseEntity<?> handleException(Exception error) {
 
-    // 500 - catch-all safety net for anything else unexpected
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception error) {
-        return new ResponseEntity<>("Sorry, server down! Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    // Print the real exception so we can see what is actually failing.
+    error.printStackTrace();
+
+    return new ResponseEntity<>(
+        "Sorry, server down! Please try again later.",
+        HttpStatus.INTERNAL_SERVER_ERROR
+    );
+}
 }

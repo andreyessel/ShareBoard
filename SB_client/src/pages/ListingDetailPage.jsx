@@ -1,3 +1,4 @@
+import { API_URL, WS_URL } from "../config";
 import { useEffect, useState,  useRef  } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import StatusBadge from "../components/feed/StatusBadge";
@@ -37,8 +38,7 @@ function ListingDetailPage() {
   useEffect(() => {
     const fetchListing = async () => {
       setLoading(true);
-      const response = await fetch(`http://localhost:8080/api/listings/${listingId}` );
-      if (response.ok) {
+const response = await fetch(`${API_URL}/api/listings/${listingId}`);      if (response.ok) {
         setListing(await response.json());
       } else {
         setListing(null);
@@ -52,8 +52,7 @@ function ListingDetailPage() {
     const fetchHistory = async () => {
       setHistoryLoading(true);
       try {
-        const response = await fetch(`http://localhost:8080/api/listings/${listingId}/matches`);
-        setMatchHistory(response.ok ? await response.json() : []);
+const response = await fetch(`${API_URL}/api/listings/${listingId}/matches`);        setMatchHistory(response.ok ? await response.json() : []);
       } finally {
         setHistoryLoading(false);
       }
@@ -67,8 +66,7 @@ useEffect(() => {
   if (!listing) return;
 
   const client = new Client({
-    brokerURL: "ws://localhost:8080/ws",
-    reconnectDelay: 5000,
+brokerURL: WS_URL,    reconnectDelay: 5000,
   });
 
     client.onConnect = () => {
@@ -77,7 +75,7 @@ useEffect(() => {
         const match = updated.find((l) => l.listingId === Number(listingId));
         if (match) {
           setListing(match);
-          fetch(`http://localhost:8080/api/listings/${listingId}/matches`)
+fetch(`${API_URL}/api/listings/${listingId}/matches`)
             .then((res) => (res.ok ? res.json() : []))
             .then(setMatchHistory)
             .catch(() => {});
@@ -95,8 +93,7 @@ useEffect(() => {
   
 async function handleWithdraw() {
     const response = await fetch(
-      `http://localhost:8080/api/listings/${listingId}?requesterId=${user.userId}`,
-      { method: "DELETE" }
+`${API_URL}/api/listings/${listingId}?requesterId=${user.userId}`,      { method: "DELETE" }
     );
   if (response.ok) {
     navigate("/");

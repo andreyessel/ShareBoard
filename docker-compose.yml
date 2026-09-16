@@ -14,7 +14,6 @@ services:
       - db_data:/var/lib/mysql
       - ./SB_server/sql:/docker-entrypoint-initdb.d
 
-
     # Check that MySQL is actually ready to accept connections.
     # This prevents the backend from trying to connect too early.
     healthcheck:
@@ -41,16 +40,16 @@ services:
       - "8080:8080"
 
   frontend:
-  build:
-    context: ./SB_client
-    args:
-      VITE_API_URL: http://localhost:8080
-      VITE_WS_URL: ws://localhost:8080/ws
-  restart: always
-  depends_on:
-    - backend
-  ports:
-    - "3000:80"
+    build:
+      context: ./SB_client
+      args:
+        VITE_API_URL: http://localhost:8080
+        VITE_WS_URL: ws://localhost:8080/ws
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
 
 volumes:
   db_data:

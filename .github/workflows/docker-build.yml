@@ -31,6 +31,6 @@ jobs:
           context: ./SB_client
           push: true
           build-args: |
-            VITE_API_URL=http://localhost:8080
-            VITE_WS_URL=ws://localhost:8080/ws
+            VITE_API_URL=http://3.131.169.239:8080
+            VITE_WS_URL=ws://3.131.169.239:8080/ws
           tags: captaindrey/shareboard-frontend:latest

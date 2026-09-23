@@ -37,21 +37,23 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          for i in $(seq 1 20); do
-            mysqladmin ping -h 127.0.0.1 -u root -prootpassword && break
+          for i in $(seq 1 30); do
+            if mysqladmin ping -h 127.0.0.1 -u root -prootpassword --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
             echo "Waiting for MySQL..."
-            sleep 3
+            sleep 2
           done
+          echo "MySQL did not become ready"
+          exit 1
 
-      # ------------------------------------------------------------
-      # Phase 1: your existing JUnit/Mockito repository + service
-      # tests. These talk directly to shareboard_test and reset it
-      # via set_known_good_state() before each test — exactly what
-      # they already do on your machine. No app needs to be running
-      # for this phase; these tests go straight through JdbcClient.
-      # ------------------------------------------------------------
       - name: Create shareboard_test database (existing test suite)
         run: mysql -h 127.0.0.1 -u root -prootpassword < SB_server/sql/test-schema.sql
+
+      - name: Verify test database
+        run: |
+          mysql -h 127.0.0.1 -u root -prootpassword -e "USE shareboard_test; SHOW TABLES;"
 
       - name: Run existing JUnit/Mockito tests
         working-directory: SB_server
@@ -59,14 +61,8 @@ jobs:
           DB_URL: jdbc:mysql://127.0.0.1:3306/shareboard_test?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
           DB_USERNAME: root
           DB_PASSWORD: rootpassword
-        run: mvn -B test
+        run: mvn -B -e test
 
-      # ------------------------------------------------------------
-      # Phase 2: the REST Assured/TestNG black-box API suite. This
-      # needs a real running app, so it gets its own database
-      # (shareboard, not shareboard_test) seeded from the same
-      # schema/seed files your docker-compose setup uses.
-      # ------------------------------------------------------------
       - name: Create and seed shareboard database (app + API suite)
         run: |
           mysql -h 127.0.0.1 -u root -prootpassword < SB_server/sql/01-schema.sql
@@ -89,22 +85,23 @@ jobs:
       - name: Wait for the app to be up
         run: |
           for i in $(seq 1 30); do
-            curl -sf http://localhost:8080/api/categories && break
+            if curl -sf http://localhost:8080/api/categories; then
+              echo "App is up"
+              exit 0
+            fi
             echo "Waiting for the app to start..."
             sleep 3
           done
+          echo "App did not start"
+          exit 1
 
-      # -Dsurefire.skip=true stops `verify`'s lifecycle from re-running
-      # phase 1's JUnit tests (which would now fail — DB_URL below points
-      # at shareboard, not shareboard_test). Only Failsafe's
-      # integration-test/verify goals run here, against the live app.
       - name: Run REST Assured/TestNG API suite
         working-directory: SB_server
         run: mvn -B verify -Dsurefire.skip=true
 
       - name: Show app logs on failure
         if: failure()
-        run: cat SB_server/app.log
+        run: cat SB_server/app.log || true
 
       - name: Stop the app
         if: always()

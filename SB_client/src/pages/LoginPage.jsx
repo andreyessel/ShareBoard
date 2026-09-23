@@ -14,6 +14,14 @@ function LoginPage() {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
   }
 
+  function handleDemoLogin() {
+  setCredentials({
+    username: "demo_org_01",
+    password: "DemoPass123!",
+  });
+  setError("");
+}
+
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
@@ -57,6 +65,8 @@ function LoginPage() {
           />
         </div>
         {error && <div className="alert alert-danger py-2">{error}</div>}
+        <button type="button" className="btn btn-outline-success w-100 mb-2" onClick={handleDemoLogin}> Try Demo</button>
+
         <button type="submit" className="btn btn-primary w-100">Log In</button>
       </form>
       <p className="text-center mt-3 small">

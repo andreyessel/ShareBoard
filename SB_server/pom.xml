@@ -19,6 +19,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <rest-assured.version>5.4.0</rest-assured.version>
+        <testng.version>7.10.1</testng.version>
     </properties>
 
     <dependencies>
@@ -75,6 +77,37 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- ============================================================
+             QA AUTOMATION ADDITIONS BELOW
+             REST Assured + TestNG — black-box API test suite that hits
+             the running app over HTTP (localhost:8080), separate from
+             the JUnit/Mockito unit + repository tests above.
+             ============================================================ -->
+
+        <!-- REST Assured: fluent HTTP assertions for the REST API -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Handy matchers used alongside REST Assured's then().body(...) -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- TestNG: the automation framework named in the job description -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -82,6 +115,39 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Deliberately NOT touching maven-surefire-plugin: `mvn test`
+                 keeps running your existing JUnit/Mockito tests exactly as
+                 before, against shareboard_test, untouched by anything below.
+
+                 The REST Assured/TestNG suite runs through Failsafe instead
+                 — the plugin Maven designed for exactly this ("hits a real
+                 running instance over HTTP") kind of test, kept in a
+                 separate phase (integration-test/verify) so it can never
+                 collide with Surefire's JUnit run or its provider selection.
+                 Classes ending in `IT` (AuthApiIT, ListingApiIT, etc.) are
+                 picked up by Failsafe's default naming convention; Surefire's
+                 default convention explicitly excludes them.
+
+                 Run with: mvn verify -Dsurefire.skip=true
+                 (see TESTING_SETUP.md for why -Dsurefire.skip is needed) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

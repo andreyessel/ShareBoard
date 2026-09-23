@@ -1,0 +1,120 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -prootpassword"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: SB_server/pom.xml
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in $(seq 1 20); do
+            mysqladmin ping -h 127.0.0.1 -u root -prootpassword && break
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
+
+      # ------------------------------------------------------------
+      # Phase 1: your existing JUnit/Mockito repository + service
+      # tests. These talk directly to shareboard_test and reset it
+      # via set_known_good_state() before each test — exactly what
+      # they already do on your machine. No app needs to be running
+      # for this phase; these tests go straight through JdbcClient.
+      # ------------------------------------------------------------
+      - name: Create shareboard_test database (existing test suite)
+        run: mysql -h 127.0.0.1 -u root -prootpassword < SB_server/sql/test-schema.sql
+
+      - name: Run existing JUnit/Mockito tests
+        working-directory: SB_server
+        env:
+          DB_URL: jdbc:mysql://127.0.0.1:3306/shareboard_test?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+          DB_USERNAME: root
+          DB_PASSWORD: rootpassword
+        run: mvn -B test
+
+      # ------------------------------------------------------------
+      # Phase 2: the REST Assured/TestNG black-box API suite. This
+      # needs a real running app, so it gets its own database
+      # (shareboard, not shareboard_test) seeded from the same
+      # schema/seed files your docker-compose setup uses.
+      # ------------------------------------------------------------
+      - name: Create and seed shareboard database (app + API suite)
+        run: |
+          mysql -h 127.0.0.1 -u root -prootpassword < SB_server/sql/01-schema.sql
+          mysql -h 127.0.0.1 -u root -prootpassword shareboard < SB_server/sql/02-seed.sql
+
+      - name: Build the app
+        working-directory: SB_server
+        run: mvn -B -DskipTests package
+
+      - name: Start the app
+        working-directory: SB_server
+        env:
+          DB_URL: jdbc:mysql://127.0.0.1:3306/shareboard?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+          DB_USERNAME: root
+          DB_PASSWORD: rootpassword
+        run: |
+          nohup mvn spring-boot:run > app.log 2>&1 &
+          echo $! > app.pid
+
+      - name: Wait for the app to be up
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/api/categories && break
+            echo "Waiting for the app to start..."
+            sleep 3
+          done
+
+      # -Dsurefire.skip=true stops `verify`'s lifecycle from re-running
+      # phase 1's JUnit tests (which would now fail — DB_URL below points
+      # at shareboard, not shareboard_test). Only Failsafe's
+      # integration-test/verify goals run here, against the live app.
+      - name: Run REST Assured/TestNG API suite
+        working-directory: SB_server
+        run: mvn -B verify -Dsurefire.skip=true
+
+      - name: Show app logs on failure
+        if: failure()
+        run: cat SB_server/app.log
+
+      - name: Stop the app
+        if: always()
+        run: kill $(cat SB_server/app.pid) 2>/dev/null || true
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            SB_server/target/surefire-reports/
+            SB_server/target/failsafe-reports/
